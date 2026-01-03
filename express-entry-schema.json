@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/express-entry-draws.schema.json",
+  "title": "Express Entry Immigration Draws",
+  "description": "Schema for Canadian Express Entry immigration draw data from Immigration, Refugees and Citizenship Canada (IRCC)",
+  "type": "object",
+  "properties": {
+    "classes": {
+      "type": "string",
+      "description": "CSS class name for styling the data table when displayed on web pages"
+    },
+    "rounds": {
+      "type": "array",
+      "description": "Array of Express Entry invitation rounds/draws",
+      "items": {
+        "type": "object",
+        "description": "Individual Express Entry draw round information",
+        "properties": {
+          "drawNumber": {
+            "type": "string",
+            "description": "Unique sequential identifier number for the Express Entry draw"
+          },
+          "drawNumberURL": {
+            "type": "string",
+            "description": "HTML anchor tag with hyperlink to the official IRCC draw details page"
+          },
+          "drawDate": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Date when the Express Entry draw was conducted (YYYY-MM-DD format)"
+          },
+          "drawDateFull": {
+            "type": "string",
+            "description": "Human-readable formatted date of the draw (e.g., 'December 17, 2025')"
+          },
+          "drawName": {
+            "type": "string",
+            "description": "Category or type of draw (e.g., 'French language proficiency', 'All programs', 'Healthcare workers')"
+          },
+          "drawSize": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Total number of Invitations to Apply (ITAs) issued in this draw"
+          },
+          "drawCRS": {
+            "type": "string",
+            "pattern": "^\\d{1,3}$",
+            "description": "Minimum Comprehensive Ranking System (CRS) score required to receive an invitation in this draw"
+          },
+          "mitext": {
+            "type": "string",
+            "description": "HTML link to the official Ministerial Instruction document for this specific draw"
+          },
+          "DrawText1": {
+            "type": "string",
+            "description": "HTML link to view the complete text of the Ministerial Instruction"
+          },
+          "drawText2": {
+            "type": "string",
+            "description": "List of immigration programs included in this draw (e.g., Federal Skilled Worker Program, Canadian Experience Class, Federal Skilled Trades Program)"
+          },
+          "drawDateTime": {
+            "type": "string",
+            "description": "Precise date and time when the draw was conducted, including UTC timezone"
+          },
+          "drawCutOff": {
+            "type": "string",
+            "description": "Cut-off date and time for Express Entry profile creation to be eligible for this draw (UTC)"
+          },
+          "drawDistributionAsOn": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Date when the CRS score distribution snapshot was captured for reporting"
+          },
+          "dd1": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Number of candidates in Express Entry pool with CRS score 600 and above"
+          },
+          "dd2": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Number of candidates in Express Entry pool with CRS score 501-600"
+          },
+          "dd3": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Number of candidates in Express Entry pool with CRS score 451-500"
+          },
+          "dd4": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Number of candidates in Express Entry pool with CRS score 401-450"
+          },
+          "dd5": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Number of candidates in Express Entry pool with CRS score 351-400"
+          },
+          "dd6": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Number of candidates in Express Entry pool with CRS score 301-350"
+          },
+          "dd7": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Number of candidates in Express Entry pool with CRS score 251-300"
+          },
+          "dd8": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Number of candidates in Express Entry pool with CRS score 201-250"
+          },
+          "dd9": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Number of candidates in Express Entry pool with CRS score 151-200"
+          },
+          "dd10": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Number of candidates in Express Entry pool with CRS score 101-150"
+          },
+          "dd11": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Number of candidates in Express Entry pool with CRS score 51-100"
+          },
+          "dd12": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Number of candidates in Express Entry pool with CRS score 1-50"
+          },
+          "dd13": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Number of candidates in Express Entry pool with CRS score 0 (no score assigned)"
+          },
+          "dd14": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Additional score range or candidate category (varies by draw type and date)"
+          },
+          "dd15": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Additional score range or candidate category (varies by draw type and date)"
+          },
+          "dd16": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Additional score range or candidate category (varies by draw type and date)"
+          },
+          "dd17": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Additional score range or candidate category (varies by draw type and date)"
+          },
+          "dd18": {
+            "type": "string",
+            "pattern": "^[0-9,]+$",
+            "description": "Total number of candidates in the Express Entry pool at the time of score distribution capture"
+          }
+        },
+        "required": [
+          "drawNumber",
+          "drawDate",
+          "drawName",
+          "drawSize",
+          "drawCRS"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["rounds"],
+  "additionalProperties": false
+}
