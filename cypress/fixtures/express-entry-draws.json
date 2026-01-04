@@ -1,0 +1,57 @@
+[
+  {
+    "drawNumber": 270,
+    "drawDate": "2024-01-03",
+    "drawDateFull": "January 3, 2024",
+    "drawName": "No Program Specified",
+    "drawSize": 1040,
+    "drawCRS": 546,
+    "dd1": "2024",
+    "dd2": "01",
+    "dd3": "03"
+  },
+  {
+    "drawNumber": 269,
+    "drawDate": "2023-12-21",
+    "drawDateFull": "December 21, 2023",
+    "drawName": "Canadian Experience Class",
+    "drawSize": 1000,
+    "drawCRS": 530,
+    "dd1": "2023",
+    "dd2": "12",
+    "dd3": "21"
+  },
+  {
+    "drawNumber": 268,
+    "drawDate": "2023-12-07",
+    "drawDateFull": "December 7, 2023",
+    "drawName": "No Program Specified",
+    "drawSize": 1400,
+    "drawCRS": 561,
+    "dd1": "2023",
+    "dd2": "12",
+    "dd3": "07"
+  },
+  {
+    "drawNumber": 267,
+    "drawDate": "2023-11-23",
+    "drawDateFull": "November 23, 2023",
+    "drawName": "Canadian Experience Class",
+    "drawSize": 1000,
+    "drawCRS": 528,
+    "dd1": "2023",
+    "dd2": "11",
+    "dd3": "23"
+  },
+  {
+    "drawNumber": 266,
+    "drawDate": "2023-11-09",
+    "drawDateFull": "November 9, 2023",
+    "drawName": "No Program Specified",
+    "drawSize": 1800,
+    "drawCRS": 563,
+    "dd1": "2023",
+    "dd2": "11",
+    "dd3": "09"
+  }
+]

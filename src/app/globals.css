@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Enhanced focus visibility for better accessibility */
+:focus-visible {
+  outline: 2px solid #2563eb !important;
+  outline-offset: 2px !important;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* High contrast mode improvements */
+@media (prefers-contrast: high) {
+  .hover\:bg-gray-50:hover {
+    background-color: #f3f4f6 !important;
+  }
+
+  .text-gray-600 {
+    color: #374151 !important;
+  }
+
+  .text-gray-500 {
+    color: #374151 !important;
+  }
+
+  .border-gray-300 {
+    border-color: #6b7280 !important;
+  }
+}
+
+/* Ensure sufficient color contrast for interactive elements */
+.text-blue-600 {
+  color: #1d4ed8 !important; /* Darker blue for better contrast */
+}
+
+.text-blue-700 {
+  color: #1e40af !important;
+}
+
+.bg-blue-600 {
+  background-color: #1d4ed8 !important;
+}
+
+.border-blue-600 {
+  border-color: #1d4ed8 !important;
+}
+
+/* Focus states for better keyboard navigation */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Table-specific accessibility improvements */
+table[role="table"] th button:focus-visible {
+  background-color: rgba(37, 99, 235, 0.1);
+}
+
+table[role="table"] tr:focus-within {
+  background-color: rgba(37, 99, 235, 0.05);
+}
+
+/* Loading and status indicators with proper contrast */
+[aria-live] {
+  font-weight: 500;
+}
