@@ -351,9 +351,16 @@ export function calculateDrawStatistics(draws: ParsedExpressEntryDraw[]): {
     };
   }
 
+  // Use actual current year for "this year" calculations
+  // Note: This may result in zero values if no draws have occurred in the current calendar year yet
   const currentYear = new Date().getFullYear();
   const thisYearDraws = draws.filter(
     (draw) => draw.drawDate.getFullYear() === currentYear,
+  );
+
+  // Find latest draw by drawNumber
+  const latestDraw = draws.reduce((latest, draw) =>
+    !latest || draw.drawNumber > latest.drawNumber ? draw : latest,
   );
 
   const totalInvitations = draws.reduce((sum, draw) => sum + draw.drawSize, 0);
@@ -365,13 +372,15 @@ export function calculateDrawStatistics(draws: ParsedExpressEntryDraw[]): {
   const crsScores = draws.map((draw) => draw.drawCRS);
   const totalCRS = crsScores.reduce((sum, crs) => sum + crs, 0);
 
-  // Find latest draw by drawNumber
-  const latestDraw = draws.reduce((latest, draw) =>
-    !latest || draw.drawNumber > latest.drawNumber ? draw : latest,
-  );
+  // Calculate total draws including skipped draw numbers
+  // This accounts for draws that were cancelled or skipped in the sequence
+  const drawNumbers = draws.map((draw) => draw.drawNumber);
+  const minDrawNumber = Math.min(...drawNumbers);
+  const maxDrawNumber = Math.max(...drawNumbers);
+  const totalDrawsIncludingSkipped = maxDrawNumber - minDrawNumber + 1;
 
   return {
-    totalDraws: draws.length,
+    totalDraws: totalDrawsIncludingSkipped,
     totalInvitations,
     averageCRS: totalCRS / draws.length,
     lowestCRS: Math.min(...crsScores),

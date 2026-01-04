@@ -57,3 +57,4 @@ tmp/
 temp/# Temporary files
 temp_data.json
 *.tsbuildinfo
+NUL

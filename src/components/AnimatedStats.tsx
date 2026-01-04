@@ -143,6 +143,8 @@ interface StatisticsGridProps {
 }
 
 export function StatisticsGrid({ statistics }: StatisticsGridProps) {
+  const currentYear = new Date().getFullYear();
+
   const stats = [
     {
       title: "Total Draws",
@@ -180,14 +182,14 @@ export function StatisticsGrid({ statistics }: StatisticsGridProps) {
       delay: 400,
     },
     {
-      title: "Draws This Year",
+      title: `Draws in ${currentYear}`,
       value: statistics.drawsThisYear,
       format: "number" as const,
       icon: <CalendarIcon />,
       delay: 500,
     },
     {
-      title: "Invitations This Year",
+      title: `Invitations in ${currentYear}`,
       value: statistics.invitationsThisYear,
       format: "number" as const,
       icon: <UserGroupIcon />,
