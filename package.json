@@ -17,7 +17,7 @@
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "selenium:test": "node scripts/selenium-test.js",
-    "deploy:gh": "npm run build && npm run export && gh-pages -d out"
+    "deploy:gh": "npm run build && gh-pages -d out"
   },
   "dependencies": {
     "next": "14.0.4",

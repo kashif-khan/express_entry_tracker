@@ -2,6 +2,8 @@
 const nextConfig = {
   output: "export",
   trailingSlash: true,
+  basePath: "/express_entry_tracker",
+  assetPrefix: "/express_entry_tracker/",
   images: {
     unoptimized: true,
   },
