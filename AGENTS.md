@@ -32,6 +32,71 @@ Use this document as guidance for agentic coding assistants operating in this re
 - Testing: Jest + Testing Library for unit; Cypress (primary) and Selenium (optional) for hybrid browser tests.
 - Hosting: GitHub Pages at `https://<username>.github.io/express_entry_tracker` via static export.
 
+**Git Setup & .gitignore**
+
+- Ensure git is initialized: `git init` if not already a git repository.
+- Always maintain this `.gitignore` for the project:
+
+```
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js
+.next/
+out/
+
+# Production build
+/build
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Environment variables
+.env*.local
+.env.production
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Runtime data
+.nyc_output
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# Cypress
+cypress/videos
+cypress/screenshots
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary folders
+tmp/
+temp/
+```
+
 **SOLID Principles**
 
 - Single Responsibility: each module/component handles one reason to change.
