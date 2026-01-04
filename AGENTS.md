@@ -5,24 +5,35 @@ This repository is a static Progressive Web App for tracking IRCC Express Entry 
 Use this document as guidance for agentic coding assistants operating in this repo.
 
 **Scope**
+
 - Applies to the entire repository.
 - If directory-specific rules are added later, those supersede conflicting items within their scope.
 
 **Cursor/Copilot Rules**
+
 - No Cursor rules found in `.cursor/rules/` or `.cursorrules`.
 - No Copilot instructions found at `.github/copilot-instructions.md`.
 - If such files are added later, integrate their guidance and prefer them for style or behavior specifics.
 
-**Project Assumptions**
-- Framework: Next.js (App Router preferred). Static export for hosting is acceptable (`next export`).
+**Project Setup**
+
+- Initialize: `npx create-next-app@latest express_entry_tracker` with recommended defaults:
+  - TypeScript: Yes
+  - ESLint: Yes
+  - Tailwind CSS: Yes
+  - `src/` directory: Yes
+  - App Router: Yes
+  - Import alias (`@/*`): Yes
+- Framework: Next.js with App Router. Static export for hosting (`next export`).
 - Language: TypeScript for all application code.
-- Styling: CSS Modules or TailwindCSS; keep consistent across pages/components.
+- Styling: Tailwind CSS (from Next.js defaults); maintain consistent utility patterns.
 - Animations: anime.js for statistic visualizations.
 - Persistence: IndexedDB (via `idb`, Dexie, or native API).
 - Testing: Jest + Testing Library for unit; Cypress (primary) and Selenium (optional) for hybrid browser tests.
 - Hosting: GitHub Pages at `https://<username>.github.io/express_entry_tracker` via static export.
 
 **SOLID Principles**
+
 - Single Responsibility: each module/component handles one reason to change.
 - Open/Closed: extend features (new columns/filters) without modifying core logic.
 - Liskov Substitution: prefer interfaces/abstract types; interchangeable implementations (e.g., storage adapters).
@@ -30,6 +41,7 @@ Use this document as guidance for agentic coding assistants operating in this re
 - Dependency Inversion: depend on abstractions; inject implementations (fetcher, db, clock) for testability.
 
 **Commands**
+
 - Install: `npm ci` (or `npm install` if CI cache unavailable)
 - Dev server: `npm run dev` (Next.js local development)
 - Build: `npm run build` (Next.js production build)
@@ -53,6 +65,7 @@ Use this document as guidance for agentic coding assistants operating in this re
 If scripts do not yet exist, agents should add minimal `package.json` scripts matching these names when implementing related features.
 
 **GitHub Pages Deployment**
+
 - Configure `next.config.js` for export + Pages:
   - `output: 'export'`, `images: { unoptimized: true }`
   - `basePath: '/express_entry_tracker'`, `assetPrefix: '/express_entry_tracker/'`
@@ -63,6 +76,7 @@ If scripts do not yet exist, agents should add minimal `package.json` scripts ma
 - Verify site at `https://<username>.github.io/express_entry_tracker`.
 
 **Commit Messages**
+
 - Include what features were implemented and what bugs were fixed; explain why when helpful.
 - Suggested format:
   - Title: `feat(table): resizable columns and typeahead filters`
@@ -73,6 +87,7 @@ If scripts do not yet exist, agents should add minimal `package.json` scripts ma
 - Avoid committing secrets or `.env.local`.
 
 **Configuration & Feature Flags**
+
 - All major features should be toggleable:
   - Env flags: `NEXT_PUBLIC_FEATURE_<NAME>=on|off` for build-time defaults.
   - Runtime flags: `lib/config.ts` exposes `getFeatureFlag(name)`; overrides via IndexedDB/localStorage.
@@ -81,6 +96,7 @@ If scripts do not yet exist, agents should add minimal `package.json` scripts ma
 - Flags must be typed (string literal union) and safe by default.
 
 **Data Fetching & Persistence Rules**
+
 - Source: `https://www.canada.ca/content/dam/ircc/documents/json/ee_rounds_123_en.json`
 - Polling: user-configurable interval; default 1–6 hours. Persist the interval in local storage or IndexedDB.
 - Networking: Use `fetch` with robust error handling and backoff on failure. Respect CORS.
@@ -89,6 +105,7 @@ If scripts do not yet exist, agents should add minimal `package.json` scripts ma
 - Latest draw: Determine by max `drawNumber`. Always highlight the latest entry in UI.
 
 **Data Table Requirements**
+
 - Columns: resizable and draggable for rearrangement.
 - Filters: typeahead and checkbox filters per column.
 - Paging: include page size options and show-all. Maintain state in URL or local state.
@@ -96,11 +113,13 @@ If scripts do not yet exist, agents should add minimal `package.json` scripts ma
 - Accessibility: keyboard operable resizing/rearrangement; ARIA attributes; focus visible.
 
 **anime.js Usage**
+
 - Use anime.js for count-up and chart-like animations of statistics.
 - Keep animations performant; avoid layout thrashing.
 - Provide reduced-motion support via `prefers-reduced-motion` and disable or dampen animations accordingly.
 
 **Code Style**
+
 - Imports:
   - Use absolute imports via `tsconfig.json` paths where configured, otherwise relative with minimal `../` depth.
   - Group imports: external libs, absolute app modules, relative modules, types, styles.
@@ -135,6 +154,7 @@ If scripts do not yet exist, agents should add minimal `package.json` scripts ma
   - No secrets in repo; configure environment via `.env.local`.
 
 **Testing**
+
 - Unit tests:
   - Use Jest + Testing Library for React components and hooks.
   - Test IndexedDB logic with mocks or `fake-indexeddb`.
@@ -153,6 +173,7 @@ If scripts do not yet exist, agents should add minimal `package.json` scripts ma
   - Measure animation frame impact if applicable.
 
 **Project Structure (suggested)**
+
 - `app/` or `pages/` for Next.js routes.
 - `components/` for UI components.
 - `hooks/` for custom hooks.
@@ -161,11 +182,13 @@ If scripts do not yet exist, agents should add minimal `package.json` scripts ma
 - `tests/` for unit tests; `cypress/` for E2E.
 
 **IndexedDB Guidance**
+
 - Use a single database (e.g., `ee-tracker-db`) with store `draws` keyed by `drawNumber`.
 - On fetch, upsert entries and maintain an index on date if needed.
 - Expose a hook `useDraws()` returning `{ draws, latestDraw }`.
 
 **Agents and Roles**
+
 - Documentation Agent (Markdown):
   - Maintain `README.md`, usage docs, and this `AGENTS.md`.
   - Ensure instructions for build/test/lint/deploy are current.
@@ -192,27 +215,32 @@ If scripts do not yet exist, agents should add minimal `package.json` scripts ma
   - Track scope for PWA features, anime.js integrations, table functionality, testing, and releases.
 
 **CI/CD Notes**
+
 - On PRs: run lint, type-check, unit tests, and Cypress.
 - Cache `node_modules` or use `npm ci` for reproducibility.
 - Upload Cypress videos/screenshots on failures to assist debugging.
 - Pages deploy: on `main` tag or manual, export and publish `out/` to `gh-pages` or `docs/`.
 
 **Environment & Config**
+
 - `.env.local` for local-only variables (do not commit).
 - Use `NEXT_PUBLIC_` prefix for client-side env vars and feature flags.
 - For GitHub Pages: configure `basePath`/`assetPrefix` as above.
 
 **Contribution Workflow**
+
 - Branch naming: `feat/`, `fix/`, `chore/`, `test/`, `docs/`.
 - Commit messages must state implemented features and fixed bugs; include rationale when relevant.
 - Small, focused PRs with clear descriptions.
 - Keep changes consistent with style, SOLID, and testing requirements here.
 
 **Validation Before Merge**
+
 - `npm run lint`, `npm run type-check`, `npm run test -- --coverage`, `npm run build`.
 - `npm run cypress:run` with network stubbing when necessary.
 - If deploying, `npm run export` and verify `out/` works with `basePath` locally.
 
 **Notes**
+
 - If new Cursor/Copilot rule files are added, update this document to include and prefer them where applicable.
 - Keep this file authoritative for agents; update when scripts, architecture, or policies change.
