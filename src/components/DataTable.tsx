@@ -43,7 +43,7 @@ const DEFAULT_COLUMNS: Column[] = [
     label: "Draw #",
     sortable: true,
     filterable: true,
-    filterType: "number",
+    filterType: "checkbox", // Keep as checkbox for multi-select but with numeric sorting
     width: 100,
     minWidth: 80,
     format: (value) => `#${value}`,
@@ -53,7 +53,7 @@ const DEFAULT_COLUMNS: Column[] = [
     label: "Date",
     sortable: true,
     filterable: true,
-    filterType: "date",
+    filterType: "checkbox", // Keep as checkbox for multi-select but with date sorting
     width: 120,
     minWidth: 100,
     format: (value) => value?.toLocaleDateString?.() || value,
@@ -63,7 +63,7 @@ const DEFAULT_COLUMNS: Column[] = [
     label: "Category",
     sortable: true,
     filterable: true,
-    filterType: "text",
+    filterType: "checkbox", // Categorical data works well with checkbox
     width: 200,
     minWidth: 150,
   },
@@ -72,7 +72,7 @@ const DEFAULT_COLUMNS: Column[] = [
     label: "Invitations",
     sortable: true,
     filterable: true,
-    filterType: "number",
+    filterType: "checkbox", // Keep as checkbox for multi-select but with numeric sorting
     width: 120,
     minWidth: 100,
     format: (value) => value?.toLocaleString?.() || value,
@@ -82,17 +82,24 @@ const DEFAULT_COLUMNS: Column[] = [
     label: "Min CRS",
     sortable: true,
     filterable: true,
-    filterType: "number",
+    filterType: "checkbox", // Keep as checkbox for multi-select but with numeric sorting
     width: 100,
     minWidth: 80,
   },
   {
-    key: "drawDateFull",
-    label: "Full Date",
-    sortable: false,
-    filterable: false,
-    width: 150,
-    minWidth: 120,
+    key: "drawCutOff",
+    label: "Cut-off Date",
+    sortable: true,
+    filterable: true,
+    filterType: "checkbox",
+    width: 180,
+    minWidth: 150,
+    format: (value) => {
+      if (value instanceof Date) {
+        return value.toLocaleDateString();
+      }
+      return String(value || "");
+    },
   },
 ];
 
@@ -233,22 +240,67 @@ export function DataTable({ data, className = "" }: DataTableProps) {
         const value = item[filter.column];
         if (value == null) return false;
 
-        switch (filter.type) {
-          case "text":
+        // Handle multi-select filters (checkbox format with ||)
+        if (filter.value.includes("||")) {
+          const selectedValues = filter.value.split("||");
+          let itemValue: string;
+
+          if (
+            (filter.column === "drawDate" || filter.column === "drawCutOff") &&
+            value instanceof Date
+          ) {
+            // For date columns, use date-only format for comparison
+            itemValue = value.toLocaleDateString();
+          } else if (filter.column === "drawNumber") {
+            // For draw number, use exact number match (remove # prefix for comparison)
+            itemValue = String(value);
+          } else {
+            itemValue = String(value);
+          }
+
+          return selectedValues.includes(itemValue);
+        }
+
+        // Handle single value filters based on column type
+        switch (filter.column) {
+          case "drawNumber":
+            // Exact number matching for draw numbers
+            const filterNum = filter.value.replace("#", "");
+            const itemNum = String(value).replace("#", "");
+            return itemNum === filterNum;
+
+          case "drawDate":
+            // Date comparison using locale format (date only)
+            if (value instanceof Date) {
+              const dateStr = value.toLocaleDateString();
+              return dateStr.toLowerCase().includes(filter.value.toLowerCase());
+            }
             return String(value)
               .toLowerCase()
               .includes(filter.value.toLowerCase());
-          case "number":
-            return String(value).includes(filter.value);
-          case "checkbox":
-            return String(value) === filter.value;
-          case "date":
-            // For date filtering, we'll convert to string and do substring matching
+
+          case "drawCutOff":
+            // Cut-off date comparison using locale date format (no time)
+            if (value instanceof Date) {
+              const dateStr = value.toLocaleDateString();
+              return dateStr.toLowerCase().includes(filter.value.toLowerCase());
+            }
             return String(value)
               .toLowerCase()
               .includes(filter.value.toLowerCase());
+
+          case "drawCRS":
+          case "drawSize":
+            // Exact number matching for numeric values
+            const cleanFilter = filter.value.replace(/[,\s]/g, "");
+            const cleanValue = String(value).replace(/[,\s]/g, "");
+            return cleanValue === cleanFilter;
+
           default:
-            return true;
+            // Text-based substring matching for other columns
+            return String(value)
+              .toLowerCase()
+              .includes(filter.value.toLowerCase());
         }
       });
     });
@@ -532,26 +584,6 @@ export function DataTable({ data, className = "" }: DataTableProps) {
             </label>
           </div>
         </div>
-
-        {/* Filters */}
-        <fieldset className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
-          <legend className="sr-only">Filter draws by column values</legend>
-          {columns
-            .filter((col) => col.filterable)
-            .map((column) => (
-              <FilterInput
-                key={column.key}
-                column={column}
-                value={
-                  filters.find((f) => f.column === column.key)?.value || ""
-                }
-                onChange={(value) =>
-                  handleFilter(column.key, value, column.filterType || "text")
-                }
-                data={data}
-              />
-            ))}
-        </fieldset>
       </div>
 
       {/* Table */}
@@ -614,45 +646,69 @@ export function DataTable({ data, className = "" }: DataTableProps) {
                         : undefined
                   }
                 >
-                  <div className="flex items-center justify-between">
-                    {column.sortable ? (
-                      <button
-                        className="flex items-center space-x-1 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1 py-1"
-                        onClick={() => handleSort(column.key)}
-                        aria-label={`Sort by ${column.label}. Currently ${
-                          sortConfig.key === column.key
-                            ? sortConfig.direction === "asc"
-                              ? "sorted ascending"
-                              : "sorted descending"
-                            : "not sorted"
-                        }`}
-                        aria-describedby={`${column.key}-sort-desc`}
-                      >
+                  <div className="space-y-2">
+                    {/* Column Header with Sort */}
+                    <div className="flex items-center justify-between">
+                      {column.sortable ? (
+                        <button
+                          className="flex items-center space-x-1 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1 py-1"
+                          onClick={() => handleSort(column.key)}
+                          aria-label={`Sort by ${column.label}. Currently ${
+                            sortConfig.key === column.key
+                              ? sortConfig.direction === "asc"
+                                ? "sorted ascending"
+                                : "sorted descending"
+                              : "not sorted"
+                          }`}
+                          aria-describedby={`${column.key}-sort-desc`}
+                        >
+                          <span>{column.label}</span>
+                          {sortConfig.key === column.key && (
+                            <span className="text-blue-600" aria-hidden="true">
+                              {sortConfig.direction === "asc" ? "↑" : "↓"}
+                            </span>
+                          )}
+                        </button>
+                      ) : (
                         <span>{column.label}</span>
-                        {sortConfig.key === column.key && (
-                          <span className="text-blue-600" aria-hidden="true">
-                            {sortConfig.direction === "asc" ? "↑" : "↓"}
-                          </span>
-                        )}
-                      </button>
-                    ) : (
-                      <span>{column.label}</span>
-                    )}
-                    <span id={`${column.key}-sort-desc`} className="sr-only">
-                      {column.sortable
-                        ? "Click to sort this column"
-                        : "This column is not sortable"}
-                    </span>
-                    {canResize && (
-                      <div
-                        className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize bg-transparent hover:bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onMouseDown={(e) => handleMouseDown(e, index)}
-                        role="separator"
-                        aria-orientation="vertical"
-                        aria-label={`Resize ${column.label} column`}
-                        tabIndex={0}
-                        onKeyDown={(e) => handleResizeKeyDown(e, index)}
-                      />
+                      )}
+                      <span id={`${column.key}-sort-desc`} className="sr-only">
+                        {column.sortable
+                          ? "Click to sort this column"
+                          : "This column is not sortable"}
+                      </span>
+                      {canResize && (
+                        <div
+                          className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize bg-transparent hover:bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onMouseDown={(e) => handleMouseDown(e, index)}
+                          role="separator"
+                          aria-orientation="vertical"
+                          aria-label={`Resize ${column.label} column`}
+                          tabIndex={0}
+                          onKeyDown={(e) => handleResizeKeyDown(e, index)}
+                        />
+                      )}
+                    </div>
+
+                    {/* Column Filter */}
+                    {column.filterable && (
+                      <div className="relative">
+                        <HeaderFilterInput
+                          column={column}
+                          value={
+                            filters.find((f) => f.column === column.key)
+                              ?.value || ""
+                          }
+                          onChange={(value) =>
+                            handleFilter(
+                              column.key,
+                              value,
+                              column.filterType || "text",
+                            )
+                          }
+                          data={data}
+                        />
+                      </div>
                     )}
                   </div>
                 </th>
@@ -691,6 +747,12 @@ export function DataTable({ data, className = "" }: DataTableProps) {
                     style={{ width: column.width }}
                     role="gridcell"
                     aria-colindex={colIndex + 2}
+                    title={
+                      column.key === "drawCutOff" &&
+                      item[column.key] instanceof Date
+                        ? `Exact cut-off time: ${(item[column.key] as Date).toLocaleString()}`
+                        : undefined
+                    }
                   >
                     {column.format
                       ? column.format(item[column.key])
@@ -808,78 +870,337 @@ export function DataTable({ data, className = "" }: DataTableProps) {
   );
 }
 
-interface FilterInputProps {
+interface HeaderFilterInputProps {
   column: Column;
   value: string;
   onChange: (value: string) => void;
   data: ParsedExpressEntryDraw[];
 }
 
-function FilterInput({ column, value, onChange, data }: FilterInputProps) {
+function HeaderFilterInput({
+  column,
+  value,
+  onChange,
+  data,
+}: HeaderFilterInputProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [selectedValues, setSelectedValues] = useState<Set<string>>(new Set());
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const inputId = useId();
   const descId = useId();
+  const listboxId = useId();
 
-  if (column.filterType === "checkbox") {
-    const uniqueValues = Array.from(
-      new Set(
-        data
-          .map((item) => item[column.key])
-          .filter(Boolean)
-          .map(String),
-      ),
-    ).sort();
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
 
-    return (
-      <div>
-        <label
-          htmlFor={inputId}
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          {column.label}
-        </label>
-        <select
-          id={inputId}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          aria-describedby={descId}
-        >
-          <option value="">All {column.label.toLowerCase()}</option>
-          {uniqueValues.map((val) => (
-            <option key={val} value={val}>
-              {val}
-            </option>
-          ))}
-        </select>
-        <span id={descId} className="sr-only">
-          Filter table by {column.label.toLowerCase()}. {uniqueValues.length}{" "}
-          unique values available.
-        </span>
-      </div>
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Get unique values for the column (always use original data, not filtered data)
+  const uniqueValues = useMemo(() => {
+    const values = data // Use original data, not filtered data
+      .map((item) => {
+        const val = item[column.key];
+        // Use consistent locale format for dates
+        if (column.key === "drawDate" && val instanceof Date) {
+          return val.toLocaleDateString();
+        } else if (column.key === "drawCutOff" && val instanceof Date) {
+          return val.toLocaleDateString(); // Date only, no time
+        } else if (column.filterType === "date" && val instanceof Date) {
+          return val.toLocaleDateString();
+        }
+        return val;
+      })
+      .filter(Boolean)
+      .map(String);
+
+    const uniqueStringValues = Array.from(new Set(values));
+
+    // Sort appropriately based on data type
+    return uniqueStringValues.sort((a, b) => {
+      // Check if values look numeric (handle formatted numbers like "1,234" or "#123")
+      const cleanA = a.replace(/[,#\s]/g, "");
+      const cleanB = b.replace(/[,#\s]/g, "");
+      const isNumericA = !isNaN(Number(cleanA)) && cleanA !== "";
+      const isNumericB = !isNaN(Number(cleanB)) && cleanB !== "";
+
+      if (isNumericA && isNumericB) {
+        // Both are numeric - sort numerically
+        return Number(cleanA) - Number(cleanB);
+      } else if (
+        column.key === "drawDate" ||
+        column.key === "drawCutOff" ||
+        a.includes("/") ||
+        a.includes("-")
+      ) {
+        // Date-like values - try to sort by date
+        const dateA = new Date(a);
+        const dateB = new Date(b);
+        if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) {
+          return dateB.getTime() - dateA.getTime(); // Most recent first
+        }
+      }
+
+      // Default to alphabetical sort
+      return a.localeCompare(b);
+    });
+  }, [data, column.key, column.filterType]); // Use original data dependency
+
+  // Filter values based on search text (typeahead)
+  const filteredValues = useMemo(() => {
+    if (!searchText.trim()) return uniqueValues;
+    return uniqueValues.filter((val) =>
+      val.toLowerCase().includes(searchText.toLowerCase()),
     );
-  }
+  }, [uniqueValues, searchText]);
+
+  // Initialize selected values from current filter
+  useEffect(() => {
+    if (value && value.includes("||")) {
+      setSelectedValues(new Set(value.split("||")));
+    } else if (value) {
+      setSelectedValues(new Set([value]));
+    } else {
+      setSelectedValues(new Set());
+    }
+  }, [value]);
+
+  // Handle checkbox selection for multi-select filters
+  const handleCheckboxChange = (val: string, checked: boolean) => {
+    setSelectedValues((prev) => {
+      const newSet = new Set(prev);
+      if (checked) {
+        newSet.add(val);
+      } else {
+        newSet.delete(val);
+      }
+      return newSet;
+    });
+  };
+
+  // Apply selected filters
+  const applyFilters = () => {
+    if (selectedValues.size === 0) {
+      onChange("");
+    } else {
+      onChange(Array.from(selectedValues).join("||"));
+    }
+    setIsOpen(false);
+  };
+
+  // Clear all filters
+  const clearFilters = () => {
+    setSelectedValues(new Set());
+    setSearchText("");
+    onChange("");
+    setIsOpen(false);
+  };
+
+  // Handle single value selection (for direct apply)
+  const handleSingleSelect = (val: string) => {
+    onChange(val);
+    setIsOpen(false);
+  };
 
   return (
-    <div>
-      <label
-        htmlFor={inputId}
-        className="block text-sm font-medium text-gray-700 mb-1"
-      >
-        {column.label}
-      </label>
-      <input
+    <div className="relative w-full" ref={dropdownRef}>
+      {/* Filter Button */}
+      <button
         id={inputId}
-        type={column.filterType === "number" ? "number" : "text"}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={`Filter ${column.label.toLowerCase()}`}
-        className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        type="button"
+        className={`w-full flex items-center justify-between px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${
+          value
+            ? "bg-blue-50 border-blue-300 text-blue-700"
+            : "bg-white border-gray-300 text-gray-600"
+        }`}
+        onClick={() => setIsOpen(!isOpen)}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
         aria-describedby={descId}
-      />
+        aria-controls={listboxId}
+      >
+        <span className="truncate text-left">
+          {selectedValues.size === 0
+            ? "Filter"
+            : selectedValues.size === 1
+              ? Array.from(selectedValues)[0]
+              : `${selectedValues.size} selected`}
+        </span>
+        <svg
+          className={`w-3 h-3 transition-transform flex-shrink-0 ml-1 ${isOpen ? "rotate-180" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
+
+      {/* Dropdown */}
+      {isOpen && (
+        <div
+          className="absolute z-50 mt-1 w-64 bg-white border border-gray-300 rounded-md shadow-lg max-h-80 overflow-hidden"
+          role="listbox"
+          id={listboxId}
+          aria-labelledby={inputId}
+        >
+          {/* Search Input */}
+          <div className="p-2 border-b border-gray-200">
+            <input
+              type="text"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              placeholder={`Search ${column.label.toLowerCase()}...`}
+              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              aria-label={`Search ${column.label.toLowerCase()} values`}
+            />
+          </div>
+
+          {/* Filter Options */}
+          <div className="max-h-48 overflow-y-auto">
+            {filteredValues.length === 0 ? (
+              <div className="px-3 py-2 text-sm text-gray-500">
+                No matching values found
+              </div>
+            ) : (
+              <>
+                {/* Quick Actions */}
+                <div className="px-3 py-2 border-b border-gray-200 bg-gray-50">
+                  <div className="flex justify-between text-xs">
+                    <button
+                      type="button"
+                      className="text-blue-600 hover:text-blue-800 focus:outline-none"
+                      onClick={() => {
+                        const allVisible = new Set(filteredValues);
+                        setSelectedValues(allVisible);
+                      }}
+                    >
+                      Select All ({filteredValues.length})
+                    </button>
+                    <button
+                      type="button"
+                      className="text-gray-600 hover:text-gray-800 focus:outline-none"
+                      onClick={() => setSelectedValues(new Set())}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+
+                {/* Option List */}
+                {filteredValues.map((val) => (
+                  <div
+                    key={val}
+                    className="px-3 py-1 hover:bg-gray-50 flex items-center justify-between group"
+                  >
+                    {/* Checkbox for multi-select */}
+                    <label className="flex items-center space-x-2 cursor-pointer flex-1">
+                      <input
+                        type="checkbox"
+                        checked={selectedValues.has(val)}
+                        onChange={(e) =>
+                          handleCheckboxChange(val, e.target.checked)
+                        }
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-1"
+                        aria-describedby={`${val}-count`}
+                      />
+                      <span className="text-sm text-gray-900 truncate flex-1">
+                        {val}
+                      </span>
+                    </label>
+
+                    {/* Count of rows with this value */}
+                    <span
+                      id={`${val}-count`}
+                      className="text-xs text-gray-500 ml-2"
+                    >
+                      (
+                      {
+                        data.filter((item) => {
+                          const itemVal = item[column.key];
+                          let stringVal: string;
+
+                          if (
+                            column.key === "drawDate" &&
+                            itemVal instanceof Date
+                          ) {
+                            stringVal = itemVal.toLocaleDateString();
+                          } else if (
+                            column.key === "drawCutOff" &&
+                            itemVal instanceof Date
+                          ) {
+                            stringVal = itemVal.toLocaleDateString(); // Date only, no time
+                          } else if (
+                            column.filterType === "date" &&
+                            itemVal instanceof Date
+                          ) {
+                            stringVal = itemVal.toLocaleDateString();
+                          } else {
+                            stringVal = String(itemVal || "");
+                          }
+
+                          return stringVal === val;
+                        }).length
+                      }
+                      )
+                    </span>
+
+                    {/* Quick select button */}
+                    <button
+                      type="button"
+                      className="text-xs text-blue-600 hover:text-blue-800 opacity-0 group-hover:opacity-100 ml-1 focus:opacity-100 focus:outline-none"
+                      onClick={() => handleSingleSelect(val)}
+                      aria-label={`Select only ${val}`}
+                    >
+                      Only
+                    </button>
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="px-3 py-2 border-t border-gray-200 flex justify-between">
+            <button
+              type="button"
+              className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded"
+              onClick={clearFilters}
+            >
+              Clear All
+            </button>
+            <button
+              type="button"
+              className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onClick={applyFilters}
+            >
+              Apply ({selectedValues.size})
+            </button>
+          </div>
+        </div>
+      )}
+
       <span id={descId} className="sr-only">
-        {column.filterType === "number"
-          ? `Enter a number to filter ${column.label.toLowerCase()}`
-          : `Enter text to search in ${column.label.toLowerCase()}`}
+        Filter table by {column.label.toLowerCase()}. {uniqueValues.length}{" "}
+        unique values available.
+        {selectedValues.size > 0 &&
+          ` ${selectedValues.size} values currently selected.`}
       </span>
     </div>
   );

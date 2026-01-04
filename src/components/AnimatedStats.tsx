@@ -49,16 +49,13 @@ export function AnimatedStatCard({
     }
   };
 
-  // Animate the counter when element becomes visible
+  // Animate the counter when element becomes visible or when value changes
   useEffect(() => {
-    if (!elementRef.current || hasAnimated) return;
+    if (!elementRef.current) return;
 
     const element = elementRef.current;
 
     const animateCounter = () => {
-      if (hasAnimated) return;
-      setHasAnimated(true);
-
       if (!animationsEnabled || prefersReducedMotion) {
         // No animation - set value immediately
         setDisplayValue(value);
@@ -67,15 +64,18 @@ export function AnimatedStatCard({
 
       // Anime.js count-up animation
       const animation = anime({
-        targets: { value: 0 },
-        value: value,
+        targets: { value: displayValue }, // Start from current displayed value
+        value: value, // Animate to new value
         duration: CONFIG.ANIMATIONS.COUNT_UP_DURATION,
-        delay: delay,
+        delay: hasAnimated ? 0 : delay, // Only use delay for first animation
         easing: CONFIG.ANIMATIONS.EASING,
         round: 1,
         update: function (anim) {
           const currentValue = anim.animations[0].currentValue;
           setDisplayValue(Number(currentValue));
+        },
+        complete: function () {
+          setHasAnimated(true);
         },
       });
 
@@ -84,23 +84,35 @@ export function AnimatedStatCard({
       };
     };
 
-    // Use Intersection Observer to trigger animation when visible
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          animateCounter();
-          observerRef.current?.disconnect();
-        }
-      },
-      { threshold: 0.1 },
-    );
+    if (hasAnimated) {
+      // If already animated once, animate immediately on value change
+      animateCounter();
+    } else {
+      // First time - use Intersection Observer to trigger animation when visible
+      observerRef.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            animateCounter();
+            observerRef.current?.disconnect();
+          }
+        },
+        { threshold: 0.1 },
+      );
 
-    observerRef.current.observe(element);
+      observerRef.current.observe(element);
+    }
 
     return () => {
       observerRef.current?.disconnect();
     };
-  }, [value, animationsEnabled, prefersReducedMotion, delay, hasAnimated]);
+  }, [
+    value,
+    animationsEnabled,
+    prefersReducedMotion,
+    delay,
+    displayValue,
+    hasAnimated,
+  ]); // Added value as dependency
 
   return (
     <div
@@ -208,7 +220,7 @@ export function StatisticsGrid({ statistics }: StatisticsGridProps) {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {stats.map((stat) => (
         <AnimatedStatCard
-          key={stat.title}
+          key={`${stat.title}-${stat.value}`} // Include value in key to force re-render on change
           title={stat.title}
           value={stat.value}
           format={stat.format}

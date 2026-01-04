@@ -116,8 +116,14 @@ export const CONFIG = {
   IRCC_DATA_URL:
     "https://www.canada.ca/content/dam/ircc/documents/json/ee_rounds_123_en.json",
 
-  /** CORS Proxy for development */
-  CORS_PROXY: "https://corsproxy.io/?",
+  /** CORS Proxies for development with fallback options */
+  CORS_PROXIES: [
+    "https://corsproxy.io/?",
+    "https://cors-anywhere.herokuapp.com/",
+    "https://api.codetabs.com/v1/proxy?quest=",
+    "https://proxy.cors.sh/",
+    "https://cors.bridged.cc/",
+  ],
 
   /** IndexedDB configuration */
   INDEXEDDB: {
@@ -199,9 +205,8 @@ export function setPollingInterval(intervalMs: number): void {
 }
 
 /**
- * Get the data URL with CORS proxy support for development
- * In development (localhost), automatically uses CORS proxy
- * In production, uses direct URL (GitHub Pages serves as static files, no CORS issue)
+ * Get the data URL with CORS proxy support for all environments
+ * Always uses CORS proxy to avoid CORS issues across all deployment scenarios
  */
 export function getDataUrl(): string {
   // Allow override via environment variable
@@ -209,16 +214,20 @@ export function getDataUrl(): string {
     return process.env.NEXT_PUBLIC_IRCC_DATA_URL;
   }
 
-  // In browser, check if running on localhost
-  if (typeof window !== "undefined") {
-    const isLocalhost =
-      window.location.hostname === "localhost" ||
-      window.location.hostname === "127.0.0.1";
+  // Always use first proxy option - fetchDraws will handle fallbacks
+  return CONFIG.CORS_PROXIES[0] + CONFIG.IRCC_DATA_URL;
+}
 
-    if (isLocalhost) {
-      return CONFIG.CORS_PROXY + CONFIG.IRCC_DATA_URL;
-    }
+/**
+ * Get all possible data URLs with CORS proxy fallbacks for all environments
+ * Returns array of proxied URLs to try in order for robust CORS handling
+ */
+export function getDataUrls(): string[] {
+  // Allow override via environment variable
+  if (process.env.NEXT_PUBLIC_IRCC_DATA_URL) {
+    return [process.env.NEXT_PUBLIC_IRCC_DATA_URL];
   }
 
-  return CONFIG.IRCC_DATA_URL;
+  // Always return array of proxied URLs for fallback in all environments
+  return CONFIG.CORS_PROXIES.map((proxy) => proxy + CONFIG.IRCC_DATA_URL);
 }

@@ -11,7 +11,7 @@ import type {
   Clock,
 } from "@/types/express-entry";
 import { DataFetchError, ValidationError } from "@/types/express-entry";
-import { CONFIG, getDataUrl } from "@/lib/config";
+import { CONFIG, getDataUrl, getDataUrls } from "@/lib/config";
 
 /**
  * Real clock implementation for production use
@@ -24,59 +24,106 @@ export class RealClock implements Clock {
 
 /**
  * HTTP-based data fetcher implementing DataFetcher interface
- * Includes retry logic, timeout handling, and proper error reporting
+ * Includes retry logic, timeout handling, multiple CORS proxy fallback, and proper error reporting
  */
 export class HttpDataFetcher implements DataFetcher {
+  private readonly urls: string[];
+
   constructor(
-    private readonly url: string = getDataUrl(),
+    urls: string[] = getDataUrls(),
     private readonly clock: Clock = new RealClock(),
-  ) {}
+  ) {
+    this.urls = urls;
+  }
 
   /**
-   * Fetch Express Entry draws with retry logic and validation
+   * Fetch Express Entry draws with multiple proxy fallback and retry logic
    */
   async fetchDraws(): Promise<ExpressEntryResponse> {
     let lastError: unknown;
 
-    for (let attempt = 1; attempt <= CONFIG.MAX_RETRY_ATTEMPTS; attempt++) {
-      try {
-        const response = await this.fetchWithTimeout();
-        const data = await this.parseAndValidateResponse(response);
-        return data;
-      } catch (error) {
-        lastError = error;
+    // Try each URL in sequence until one succeeds
+    for (let urlIndex = 0; urlIndex < this.urls.length; urlIndex++) {
+      const currentUrl = this.urls[urlIndex];
 
-        // Don't retry validation errors or final attempt
-        if (
-          error instanceof ValidationError ||
-          attempt === CONFIG.MAX_RETRY_ATTEMPTS
-        ) {
-          throw error;
+      // For each URL, try multiple times with exponential backoff
+      for (let attempt = 1; attempt <= CONFIG.MAX_RETRY_ATTEMPTS; attempt++) {
+        try {
+          const response = await this.fetchWithTimeout(currentUrl);
+          const data = await this.parseAndValidateResponse(response);
+
+          // Success! Log which proxy worked if we tried multiple
+          if (urlIndex > 0 || this.urls.length > 1) {
+            console.info(
+              `Successfully fetched data using URL ${urlIndex + 1}/${this.urls.length}: ${this.getProxyName(currentUrl)}`,
+            );
+          }
+
+          return data;
+        } catch (error) {
+          lastError = error;
+
+          // Don't retry validation errors
+          if (error instanceof ValidationError) {
+            console.warn(
+              `Validation error with URL ${urlIndex + 1}/${this.urls.length} (${this.getProxyName(currentUrl)}):`,
+              error,
+            );
+            break; // Try next URL
+          }
+
+          // If this is the last attempt for this URL, try next URL
+          if (attempt === CONFIG.MAX_RETRY_ATTEMPTS) {
+            console.warn(
+              `All ${CONFIG.MAX_RETRY_ATTEMPTS} attempts failed for URL ${urlIndex + 1}/${this.urls.length} (${this.getProxyName(currentUrl)}):`,
+              error,
+            );
+            break; // Try next URL
+          }
+
+          // Wait before retry with exponential backoff
+          const delay = CONFIG.RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1);
+          await this.sleep(delay);
+
+          console.warn(
+            `Attempt ${attempt}/${CONFIG.MAX_RETRY_ATTEMPTS} failed for URL ${urlIndex + 1}/${this.urls.length} (${this.getProxyName(currentUrl)}), retrying in ${delay}ms:`,
+            error,
+          );
         }
-
-        // Wait before retry with exponential backoff
-        const delay = CONFIG.RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1);
-        await this.sleep(delay);
-
-        console.warn(
-          `Data fetch attempt ${attempt} failed, retrying in ${delay}ms:`,
-          error,
-        );
       }
     }
 
-    throw new DataFetchError("All retry attempts failed", lastError);
+    throw new DataFetchError(
+      "All proxy URLs and retry attempts failed",
+      lastError,
+    );
+  }
+
+  /**
+   * Get a friendly name for the proxy being used
+   */
+  private getProxyName(url: string): string {
+    if (url.includes("corsproxy.io")) return "corsproxy.io";
+    if (url.includes("cors-anywhere.herokuapp.com")) return "cors-anywhere";
+    if (url.includes("codetabs.com")) return "codetabs.com";
+    if (url.includes("cors.sh")) return "cors.sh";
+    if (url.includes("bridged.cc")) return "bridged.cc";
+    if (url.includes("canada.ca")) return "Direct IRCC";
+    return "Unknown proxy";
   }
 
   /**
    * Fetch with timeout to prevent hanging requests
    */
-  private async fetchWithTimeout(timeoutMs: number = 30000): Promise<Response> {
+  private async fetchWithTimeout(
+    url: string,
+    timeoutMs: number = 30000,
+  ): Promise<Response> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
-      const response = await fetch(this.url, {
+      const response = await fetch(url, {
         signal: controller.signal,
         headers: {
           Accept: "application/json",
@@ -87,7 +134,7 @@ export class HttpDataFetcher implements DataFetcher {
       if (!response.ok) {
         throw new DataFetchError(
           `HTTP ${response.status}: ${response.statusText}`,
-          { status: response.status, url: this.url },
+          { status: response.status, url },
         );
       }
 
@@ -96,7 +143,7 @@ export class HttpDataFetcher implements DataFetcher {
       if (error instanceof Error && error.name === "AbortError") {
         throw new DataFetchError("Request timeout", {
           timeoutMs,
-          url: this.url,
+          url,
         });
       }
       throw new DataFetchError("Network request failed", error);
@@ -261,14 +308,157 @@ export function parseExpressEntryDraw(
       throw new ValidationError(`Invalid drawCRS: ${raw.drawCRS}`);
     }
 
-    // Parse optional dates
-    const drawDateTime = raw.drawDateTime
-      ? new Date(raw.drawDateTime)
-      : undefined;
-    const drawCutOff = raw.drawCutOff ? new Date(raw.drawCutOff) : undefined;
-    const drawDistributionAsOn = raw.drawDistributionAsOn
-      ? new Date(raw.drawDistributionAsOn)
-      : undefined;
+    /**
+     * Sanitize and parse drawCutOff date string
+     * Handles various formats and ensures security against malicious inputs
+     */
+    function sanitizeDrawCutOff(rawCutOff: unknown): Date | undefined {
+      // Input validation
+      if (!rawCutOff || typeof rawCutOff !== "string") {
+        return undefined;
+      }
+
+      // Security: limit string length to prevent DoS attacks
+      const MAX_DATE_STRING_LENGTH = 200;
+      if (rawCutOff.length > MAX_DATE_STRING_LENGTH) {
+        console.warn(
+          `drawCutOff string too long (${rawCutOff.length} chars), truncating`,
+        );
+        return undefined;
+      }
+
+      // Security: check for potentially malicious patterns
+      const SUSPICIOUS_PATTERNS = [
+        /<script/i,
+        /javascript:/i,
+        /data:text\/html/i,
+        /vbscript:/i,
+        /<iframe/i,
+        /<object/i,
+        /<embed/i,
+      ];
+
+      for (const pattern of SUSPICIOUS_PATTERNS) {
+        if (pattern.test(rawCutOff)) {
+          console.warn(`Suspicious pattern detected in drawCutOff: ${pattern}`);
+          return undefined;
+        }
+      }
+
+      // Normalize the input string
+      let normalizedInput = rawCutOff.trim();
+
+      // Remove HTML entities if any
+      normalizedInput = normalizedInput
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&amp;/g, "&")
+        .replace(/&quot;/g, '"')
+        .replace(/&#x27;/g, "'")
+        .replace(/&#x2F;/g, "/");
+
+      try {
+        // Extract only the date part (up to year) using the specified regex pattern
+        // This removes the time portion from formats like "January 4, 2020 at 12:16:45 UTC"
+        const timePortionPattern = /[ ,]*at[ ,]*.*/;
+        const dateOnlyInput = normalizedInput.replace(timePortionPattern, "");
+
+        // Parse the date-only portion
+        const date = new Date(dateOnlyInput.trim());
+
+        // Validate the parsed date
+        if (isNaN(date.getTime())) {
+          console.warn(
+            `Failed to parse drawCutOff date after time removal: "${dateOnlyInput}" (from original: "${rawCutOff}")`,
+          );
+          return undefined;
+        }
+
+        // Final validation
+        if (isNaN(date.getTime())) {
+          console.warn(
+            `Failed to parse drawCutOff date: "${rawCutOff}" (processed: "${dateOnlyInput}")`,
+          );
+          return undefined;
+        }
+
+        // Sanity check: ensure date is within reasonable range
+        const MIN_YEAR = 2015; // Express Entry started in 2015
+        const MAX_YEAR = new Date().getFullYear() + 5; // Allow up to 5 years in future
+        const year = date.getFullYear();
+
+        if (year < MIN_YEAR || year > MAX_YEAR) {
+          console.warn(
+            `drawCutOff date outside reasonable range: ${year} (input: "${rawCutOff}")`,
+          );
+          return undefined;
+        }
+
+        return date;
+      } catch (error) {
+        console.warn(`Error parsing drawCutOff: "${rawCutOff}"`, error);
+        return undefined;
+      }
+    }
+
+    /**
+     * Sanitize and parse drawDateTime string with similar logic
+     */
+    function sanitizeDrawDateTime(rawDateTime: unknown): Date | undefined {
+      // Use the same sanitization logic as drawCutOff
+      return sanitizeDrawCutOff(rawDateTime);
+    }
+
+    /**
+     * Sanitize and parse drawDistributionAsOn date string
+     */
+    function sanitizeDrawDistributionAsOn(rawDate: unknown): Date | undefined {
+      if (!rawDate || typeof rawDate !== "string") {
+        return undefined;
+      }
+
+      // Security and length checks
+      const MAX_DATE_STRING_LENGTH = 50; // Shorter for simple date strings
+      if (rawDate.length > MAX_DATE_STRING_LENGTH) {
+        return undefined;
+      }
+
+      try {
+        // Simple date parsing for format like "December 14, 2025"
+        const date = new Date(rawDate.trim());
+
+        if (isNaN(date.getTime())) {
+          return undefined;
+        }
+
+        // Sanity check
+        const year = date.getFullYear();
+        if (year < 2015 || year > new Date().getFullYear() + 5) {
+          return undefined;
+        }
+
+        return date;
+      } catch (error) {
+        console.warn(`Error parsing drawDistributionAsOn: "${rawDate}"`, error);
+        return undefined;
+      }
+    }
+
+    // Call sanitization functions to get the sanitized dates
+    const drawDateTime = sanitizeDrawDateTime(raw.drawDateTime);
+    const drawCutOff = sanitizeDrawCutOff(raw.drawCutOff);
+    const drawDistributionAsOn = sanitizeDrawDistributionAsOn(
+      raw.drawDistributionAsOn,
+    );
+
+    // Debug logging for drawCutOff
+    if (raw.drawCutOff) {
+      console.log(
+        `Draw ${raw.drawNumber}: rawCutOff="${raw.drawCutOff}", parsedCutOff=`,
+        drawCutOff,
+        `isValid=${drawCutOff && !isNaN(drawCutOff.getTime())}`,
+      );
+    }
 
     // Parse score distribution
     const scoreDistribution: Record<string, number> = {};
@@ -393,10 +583,10 @@ export function calculateDrawStatistics(draws: ParsedExpressEntryDraw[]): {
 }
 
 /**
- * Factory function to create DataFetcher instance
+ * Factory function to create DataFetcher instance with proxy fallback support
  */
-export function createDataFetcher(url?: string, clock?: Clock): DataFetcher {
-  return new HttpDataFetcher(url, clock);
+export function createDataFetcher(urls?: string[], clock?: Clock): DataFetcher {
+  return new HttpDataFetcher(urls, clock);
 }
 
 /**
