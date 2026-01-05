@@ -17,7 +17,8 @@
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "selenium:test": "node scripts/selenium-test.js",
-    "deploy:gh": "GITHUB_PAGES=true npm run build && gh-pages -d out"
+    "deploy:gh": "GITHUB_PAGES=true npm run build && gh-pages -d out",
+    "generate-icons": "node scripts/generate-icons.js"
   },
   "dependencies": {
     "animejs": "^3.2.1",

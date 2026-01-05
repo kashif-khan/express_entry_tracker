@@ -1,0 +1,87 @@
+<!-- VARIANT 2: GRADIENT (Compass Leaf) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Compass Leaf logo - gradient">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b1b2a"/>
+      <stop offset="1" stop-color="#07111b"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="35%" cy="25%" r="75%">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0.08"/>
+    </linearGradient>
+    <linearGradient id="needle" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0.06"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff3b30"/>
+      <stop offset="1" stop-color="#c81d25"/>
+    </linearGradient>
+    <clipPath id="clip">
+      <circle cx="256" cy="256" r="226"/>
+    </clipPath>
+  </defs>
+
+  <!-- Badge -->
+  <circle cx="256" cy="256" r="226" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="226" fill="url(#glow)"/>
+  <circle cx="256" cy="256" r="226" fill="none" stroke="#ffffff" stroke-opacity="0.14" stroke-width="6"/>
+  <circle cx="256" cy="256" r="198" fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="2"/>
+
+  <g clip-path="url(#clip)">
+    <!-- Compass ring -->
+    <circle cx="256" cy="256" r="142" fill="none" stroke="url(#ring)" stroke-width="18"/>
+    <circle cx="256" cy="256" r="122" fill="none" stroke="#ffffff" stroke-opacity="0.06" stroke-width="2"/>
+
+    <!-- Cardinal ticks -->
+    <g stroke="#ffffff" stroke-opacity="0.55" stroke-width="10" stroke-linecap="round">
+      <path d="M256 94 L256 126"/>
+      <path d="M256 386 L256 418"/>
+      <path d="M94 256 L126 256"/>
+      <path d="M386 256 L418 256"/>
+    </g>
+    <g stroke="#ffffff" stroke-opacity="0.22" stroke-width="8" stroke-linecap="round">
+      <path d="M154 154 L176 176"/>
+      <path d="M336 336 L358 358"/>
+      <path d="M358 154 L336 176"/>
+      <path d="M176 336 L154 358"/>
+    </g>
+
+    <!-- Needle (soft gradient) -->
+    <path d="M256 120 L336 256 L256 218 L176 256 Z" fill="url(#needle)"/>
+    <path d="M256 158 L304 256 L256 236 L208 256 Z" fill="#ffffff" fill-opacity="0.16"/>
+
+    <!-- Maple-leaf north pointer -->
+    <g transform="translate(256 186)">
+      <path fill="url(#red)" d="
+        M 0 -62
+        L 9 -44
+        L 28 -50
+        L 20 -32
+        L 40 -28
+        L 24 -18
+        L 34 -2
+        L 16 -5
+        L 14 16
+        L 0 6
+        L -14 16
+        L -16 -5
+        L -34 -2
+        L -24 -18
+        L -40 -28
+        L -20 -32
+        L -28 -50
+        L -9 -44
+        Z"/>
+      <path fill="#8b1118" d="M -5 8 L 5 8 L 7 56 L -7 56 Z"/>
+    </g>
+
+    <!-- Center -->
+    <circle cx="256" cy="256" r="12" fill="#ffffff" fill-opacity="0.22"/>
+    <circle cx="256" cy="256" r="6" fill="url(#red)"/>
+  </g>
+</svg>
