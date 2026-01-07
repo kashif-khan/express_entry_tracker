@@ -94,25 +94,25 @@ export default function HomePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-md">
-          <div className="text-red-500 text-6xl mb-4">⚠️</div>
-          <h2 className="text-xl font-semibold mb-2 text-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+        <div className="text-center p-6 sm:p-8 bg-white rounded-lg shadow-lg max-w-md w-full">
+          <div className="text-red-500 text-4xl sm:text-5xl md:text-6xl mb-4">⚠️</div>
+          <h2 className="text-lg sm:text-xl font-semibold mb-2 text-gray-900">
             Unable to Load Data
           </h2>
-          <p className="text-gray-600 mb-4">{error.message}</p>
+          <p className="text-sm sm:text-base text-gray-600 mb-4">{error.message}</p>
           <div className="space-y-2">
             <button
               onClick={handleRefresh}
               disabled={isLoading}
-              className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className="w-full bg-blue-600 text-white px-4 py-2.5 sm:py-2 rounded hover:bg-blue-700 disabled:opacity-50 transition-colors text-sm sm:text-base min-h-[44px] sm:min-h-0"
             >
               {isLoading ? "Retrying..." : "Try Again"}
             </button>
             <button
               onClick={handleClearCache}
               disabled={isLoading || isClearing}
-              className="w-full bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 disabled:opacity-50 transition-colors text-sm"
+              className="w-full bg-gray-600 text-white px-4 py-2.5 sm:py-2 rounded hover:bg-gray-700 disabled:opacity-50 transition-colors text-sm min-h-[44px] sm:min-h-0"
             >
               {isClearing ? "Clearing..." : "Clear Cache & Retry"}
             </button>
@@ -126,25 +126,25 @@ export default function HomePage() {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 sm:py-6 gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
                 Express Entry Tracker
               </h1>
-              <p className="mt-1 text-gray-600">
+              <p className="mt-1 text-sm sm:text-base text-gray-600 hidden sm:block">
                 Track Canadian immigration Express Entry draws and statistics
               </p>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
               {lastUpdated && (
-                <span className="text-sm text-gray-500">
+                <span className="text-xs sm:text-sm text-gray-500 hidden md:block">
                   Last updated: {lastUpdated.toLocaleString()}
                 </span>
               )}
-              <div className="relative" ref={dropdownRef}>
+              <div className="relative w-full sm:w-auto" ref={dropdownRef}>
                 <button
                   onClick={() => setShowDataActions(!showDataActions)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+                  className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2.5 sm:py-2 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
                   disabled={isLoading || isClearing}
                 >
                   <span>
@@ -170,7 +170,7 @@ export default function HomePage() {
                 </button>
 
                 {showDataActions && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10">
+                  <div className="absolute right-0 sm:right-0 left-0 sm:left-auto mt-2 w-full sm:w-64 max-w-sm bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10">
                     <button
                       onClick={handleRefresh}
                       disabled={isLoading || isClearing}
@@ -252,14 +252,14 @@ export default function HomePage() {
       </header>
 
       <main
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12"
         data-testid="main-content"
       >
         {isLoading && draws.length === 0 ? (
-          <div className="flex items-center justify-center py-12">
+          <div className="flex items-center justify-center py-8 sm:py-12">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading Express Entry data...</p>
+              <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-sm sm:text-base text-gray-600">Loading Express Entry data...</p>
             </div>
           </div>
         ) : (
@@ -280,34 +280,34 @@ export default function HomePage() {
             {/* Latest Draw Highlight */}
             {filteredLatestDraw && (
               <section className="mb-8" data-testid="latest-draw-section">
-                <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg p-6 shadow-lg">
+                <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg p-4 sm:p-6 shadow-lg">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold">Latest Draw</h2>
-                    <span className="bg-white/20 px-3 py-1 rounded-full text-sm">
+                    <h2 className="text-lg sm:text-xl font-semibold">Latest Draw</h2>
+                    <span className="bg-white/20 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm">
                       Draw #{filteredLatestDraw.drawNumber}
                     </span>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                     <div>
-                      <p className="text-blue-100 text-sm">Date</p>
-                      <p className="text-xl font-semibold">
+                      <p className="text-blue-100 text-xs sm:text-sm">Date</p>
+                      <p className="text-base sm:text-xl font-semibold">
                         {filteredLatestDraw.drawDateFull ||
                           filteredLatestDraw.drawDate.toLocaleDateString()}
                       </p>
                     </div>
                     <div>
-                      <p className="text-blue-100 text-sm">Category</p>
-                      <p className="text-lg">{filteredLatestDraw.drawName}</p>
+                      <p className="text-blue-100 text-xs sm:text-sm">Category</p>
+                      <p className="text-sm sm:text-lg">{filteredLatestDraw.drawName}</p>
                     </div>
                     <div>
-                      <p className="text-blue-100 text-sm">Invitations</p>
-                      <p className="text-xl font-semibold">
+                      <p className="text-blue-100 text-xs sm:text-sm">Invitations</p>
+                      <p className="text-base sm:text-xl font-semibold">
                         {filteredLatestDraw.drawSize.toLocaleString()}
                       </p>
                     </div>
                     <div>
-                      <p className="text-blue-100 text-sm">Minimum CRS</p>
-                      <p className="text-xl font-semibold">
+                      <p className="text-blue-100 text-xs sm:text-sm">Minimum CRS</p>
+                      <p className="text-base sm:text-xl font-semibold">
                         {filteredLatestDraw.drawCRS}
                       </p>
                     </div>
@@ -319,10 +319,10 @@ export default function HomePage() {
             {/* Statistics Dashboard */}
             {filteredStatistics && (
               <section className="mb-8" data-testid="stats-section">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
                   Statistics
                   {(timelineFilter.start || timelineFilter.end) && (
-                    <span className="text-lg font-normal text-gray-600 ml-2">
+                    <span className="text-sm sm:text-base md:text-lg font-normal text-gray-600 ml-2">
                       (Filtered)
                     </span>
                   )}
@@ -342,28 +342,28 @@ export default function HomePage() {
             )}
 
             {/* Data Source Attribution */}
-            <section className="mt-12 bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <section className="mt-8 sm:mt-12 bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
                 Data Source
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-sm sm:text-base text-gray-600 mb-4">
                 Express Entry draw data is sourced from Immigration, Refugees
                 and Citizenship Canada (IRCC). Data is updated automatically and
                 cached locally for better performance.
               </p>
-              <div className="flex items-center justify-between text-sm text-gray-500">
-                <div className="flex items-center space-x-4">
-                  <span>
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs sm:text-sm text-gray-500">
+                <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2 sm:gap-3">
+                  <span className="whitespace-nowrap">
                     Last data update:{" "}
                     {lastUpdated ? lastUpdated.toLocaleString() : "Never"}
                   </span>
-                  <span>•</span>
-                  <span>Cache: {draws.length} draws stored</span>
-                  <span>•</span>
-                  <span>Showing: {filteredDraws.length} draws</span>
-                  <span>•</span>
+                  <span className="hidden sm:inline">•</span>
+                  <span className="whitespace-nowrap">Cache: {draws.length} draws stored</span>
+                  <span className="hidden sm:inline">•</span>
+                  <span className="whitespace-nowrap">Showing: {filteredDraws.length} draws</span>
+                  <span className="hidden sm:inline">•</span>
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    className={`px-2 py-1 rounded-full text-xs font-medium inline-block ${
                       lastUpdated &&
                       Date.now() - lastUpdated.getTime() < 3600000
                         ? "bg-green-100 text-green-800"
@@ -375,19 +375,22 @@ export default function HomePage() {
                       : "Update Available"}
                   </span>
                 </div>
-                <div className="space-x-4">
-                  <span>
+                <div className="text-xs sm:text-sm">
+                  <span className="hidden lg:inline">
                     Features: Timeline filter, resizable columns, sorting,
                     filtering, pagination
                   </span>
+                  <span className="lg:hidden">
+                    Full-featured data table
+                  </span>
                 </div>
               </div>
-              <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
-                <div className="text-sm text-gray-500">
+              <div className="mt-4 pt-4 border-t border-gray-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="text-xs sm:text-sm text-gray-500">
                   © 2024 Express Entry Tracker. This application is not
                   affiliated with IRCC.
                 </div>
-                <div className="flex items-center space-x-4 text-sm">
+                <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm">
                   <a
                     href="/terms"
                     className="text-blue-600 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1"

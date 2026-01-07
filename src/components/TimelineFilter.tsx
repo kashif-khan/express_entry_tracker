@@ -196,10 +196,10 @@ export function TimelineFilter({
   };
 
   return (
-    <section className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">Timeline Filter</h2>
-        <div className="text-sm text-gray-500">
+    <section className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4 sm:mb-6">
+        <h2 className="text-base sm:text-lg font-semibold text-gray-900">Timeline Filter</h2>
+        <div className="text-xs sm:text-sm text-gray-500">
           Showing {filteredCount.toLocaleString()} of{" "}
           {totalCount.toLocaleString()} draws
         </div>
@@ -212,7 +212,7 @@ export function TimelineFilter({
             <button
               key={preset.label}
               onClick={() => handlePresetClick(preset)}
-              className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
+              className={`px-3 py-2 sm:py-1.5 text-xs sm:text-sm rounded-md border transition-colors ${
                 preset.isActive(dateRange)
                   ? "bg-blue-600 text-white border-blue-600"
                   : "bg-gray-50 text-gray-700 border-gray-300 hover:bg-gray-100"
@@ -229,7 +229,7 @@ export function TimelineFilter({
               <button
                 key={preset.label}
                 onClick={() => handlePresetClick(preset)}
-                className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                className={`px-3 py-2 sm:py-1.5 text-xs sm:text-sm rounded-md border transition-colors ${
                   preset.isActive(dateRange)
                     ? "bg-blue-600 text-white border-blue-600"
                     : "bg-gray-50 text-gray-700 border-gray-300 hover:bg-gray-100"
@@ -243,11 +243,11 @@ export function TimelineFilter({
       </div>
 
       {/* Custom Date Range */}
-      <div className="flex flex-col sm:flex-row gap-4 items-end">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-end">
         <div className="flex-1">
           <label
             htmlFor="start-date"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
           >
             Start Date
           </label>
@@ -258,14 +258,14 @@ export function TimelineFilter({
             onChange={handleStartDateChange}
             min={formatDateForInput(earliest)}
             max={formatDateForInput(latest)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
         <div className="flex-1">
           <label
             htmlFor="end-date"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
           >
             End Date
           </label>
@@ -276,13 +276,13 @@ export function TimelineFilter({
             onChange={handleEndDateChange}
             min={formatDateForInput(dateRange.start || earliest)}
             max={formatDateForInput(latest)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
         <button
           onClick={() => onDateRangeChange({ start: null, end: null })}
-          className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+          className="w-full sm:w-auto px-4 py-2.5 sm:py-2 text-sm text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors whitespace-nowrap"
         >
           Clear Filter
         </button>

@@ -117,24 +117,24 @@ export function AnimatedStatCard({
   return (
     <div
       ref={elementRef}
-      className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 transform transition-transform hover:scale-105"
+      className="bg-white rounded-lg p-4 md:p-6 shadow-sm border border-gray-200 transform transition-transform md:hover:scale-105"
       data-testid="stat-card"
       aria-label={`${title}: ${formatValue(displayValue, format)}`}
     >
       <div className="flex items-center">
         {icon && (
-          <div className="flex-shrink-0 mr-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+          <div className="flex-shrink-0 mr-3 md:mr-4">
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
               {icon}
             </div>
           </div>
         )}
         <div className="flex-1">
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">
+          <p className="text-xs sm:text-sm font-medium text-gray-600">{title}</p>
+          <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mt-1">
             {formatValue(displayValue, format)}
           </p>
-          {subtitle && <p className="text-sm text-gray-500 mt-1">{subtitle}</p>}
+          {subtitle && <p className="text-xs sm:text-sm text-gray-500 mt-1">{subtitle}</p>}
         </div>
       </div>
     </div>
@@ -217,7 +217,7 @@ export function StatisticsGrid({ statistics }: StatisticsGridProps) {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
       {stats.map((stat) => (
         <AnimatedStatCard
           key={`${stat.title}-${stat.value}`} // Include value in key to force re-render on change

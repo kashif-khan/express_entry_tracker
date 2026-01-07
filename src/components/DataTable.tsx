@@ -550,16 +550,16 @@ export function DataTable({ data, className = "" }: DataTableProps) {
         role="region"
         aria-label="Table controls and filters"
       >
-        <div className="flex justify-between items-center mb-4">
-          <h3 id={captionId} className="text-lg font-semibold text-gray-900">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+          <h3 id={captionId} className="text-base sm:text-lg font-semibold text-gray-900">
             Express Entry Draws
           </h3>
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-600" aria-live="polite">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
+            <span className="text-xs sm:text-sm text-gray-600 order-2 sm:order-1" aria-live="polite">
               Showing {startRecord}-{endRecord} of {pagination.total} draws
             </span>
-            <label className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-gray-700">
+            <label className="flex items-center gap-2 order-1 sm:order-2 w-full sm:w-auto">
+              <span className="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">
                 Rows per page:
               </span>
               <select
@@ -569,12 +569,12 @@ export function DataTable({ data, className = "" }: DataTableProps) {
                     e.target.value === "all" ? "all" : parseInt(e.target.value),
                   )
                 }
-                className="border border-gray-300 rounded px-3 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 flex-1 sm:flex-initial"
                 aria-describedby={`${filterRegionId}-rows-desc`}
               >
                 {CONFIG.TABLE.PAGE_SIZE_OPTIONS.map((option) => (
                   <option key={option} value={option}>
-                    {option === "all" ? "Show All" : `${option} per page`}
+                    {option === "all" ? "All" : option}
                   </option>
                 ))}
               </select>
@@ -768,16 +768,16 @@ export function DataTable({ data, className = "" }: DataTableProps) {
       {/* Pagination */}
       {pagination.pageSize !== "all" && totalPages > 1 && (
         <nav
-          className="px-4 py-3 bg-white border-t flex items-center justify-between"
+          className="px-4 py-3 bg-white border-t flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3"
           id={paginationId}
           role="navigation"
           aria-label="Table pagination"
         >
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2 justify-center sm:justify-start">
             <button
               onClick={() => handlePageChange(1)}
               disabled={pagination.page === 1}
-              className="px-3 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2.5 sm:py-2 text-xs sm:text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 min-h-[44px] sm:min-h-0"
               aria-label="Go to first page"
             >
               First
@@ -785,7 +785,7 @@ export function DataTable({ data, className = "" }: DataTableProps) {
             <button
               onClick={() => handlePageChange(pagination.page - 1)}
               disabled={pagination.page === 1}
-              className="px-3 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2.5 sm:py-2 text-xs sm:text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 min-h-[44px] sm:min-h-0"
               aria-label="Go to previous page"
             >
               Previous
@@ -793,7 +793,7 @@ export function DataTable({ data, className = "" }: DataTableProps) {
           </div>
 
           <div
-            className="flex items-center space-x-1"
+            className="flex items-center gap-1 sm:gap-1 justify-center"
             role="group"
             aria-label="Page numbers"
           >
@@ -804,7 +804,7 @@ export function DataTable({ data, className = "" }: DataTableProps) {
                 <button
                   key={pageNum}
                   onClick={() => handlePageChange(pageNum)}
-                  className={`px-3 py-1 text-sm border rounded focus:ring-2 focus:ring-blue-500 ${
+                  className={`px-3 py-2.5 sm:py-2 text-xs sm:text-sm border rounded focus:ring-2 focus:ring-blue-500 min-h-[44px] sm:min-h-0 ${
                     pageNum === pagination.page
                       ? "bg-blue-600 text-white border-blue-600"
                       : "hover:bg-gray-50"
@@ -820,11 +820,11 @@ export function DataTable({ data, className = "" }: DataTableProps) {
             })}
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2 justify-center sm:justify-end">
             <button
               onClick={() => handlePageChange(pagination.page + 1)}
               disabled={pagination.page === totalPages}
-              className="px-3 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2.5 sm:py-2 text-xs sm:text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 min-h-[44px] sm:min-h-0"
               aria-label="Go to next page"
             >
               Next
@@ -832,7 +832,7 @@ export function DataTable({ data, className = "" }: DataTableProps) {
             <button
               onClick={() => handlePageChange(totalPages)}
               disabled={pagination.page === totalPages}
-              className="px-3 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2.5 sm:py-2 text-xs sm:text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 min-h-[44px] sm:min-h-0"
               aria-label="Go to last page"
             >
               Last
@@ -1055,7 +1055,7 @@ function HeaderFilterInput({
       {/* Dropdown */}
       {isOpen && (
         <div
-          className="absolute z-50 mt-1 w-64 bg-white border border-gray-300 rounded-md shadow-lg max-h-80 overflow-hidden"
+          className="absolute z-50 mt-1 left-0 right-0 sm:left-auto sm:right-auto sm:w-64 bg-white border border-gray-300 rounded-md shadow-lg max-h-80 overflow-hidden"
           role="listbox"
           id={listboxId}
           aria-labelledby={inputId}
