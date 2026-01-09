@@ -10,6 +10,28 @@ export const metadata = {
     statusBarStyle: "default",
     title: "Express Entry Tracker",
   },
+  openGraph: {
+    title: "Express Entry Tracker",
+    description: "Track IRCC Express Entry draws and statistics with real-time updates, score predictions, and detailed analytics",
+    url: "https://kashif-khan.github.io/express_entry_tracker",
+    siteName: "Express Entry Tracker",
+    images: [
+      {
+        url: "/icon-512.png",
+        width: 512,
+        height: 512,
+        alt: "Express Entry Tracker Logo",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Express Entry Tracker",
+    description: "Track IRCC Express Entry draws and statistics with real-time updates, score predictions, and detailed analytics",
+    images: ["/icon-512.png"],
+  },
 };
 
 export const viewport = {
