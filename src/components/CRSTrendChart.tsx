@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import anime from "animejs";
 import type { ParsedExpressEntryDraw } from "@/types/express-entry";
 import { calculateCRSTrends, type CRSAnalytics } from "@/lib/analytics";
@@ -36,20 +36,7 @@ export const CRSTrendChart: React.FC<CRSTrendChartProps> = ({
   const [isAnimating, setIsAnimating] = useState(false);
   const [selectedPoint, setSelectedPoint] = useState<ChartDataPoint | null>(null);
 
-  useEffect(() => {
-    if (draws && draws.length > 0) {
-      const analyticsData = calculateCRSTrends(draws);
-      setAnalytics(analyticsData);
-    }
-  }, [draws]);
-
-  useEffect(() => {
-    if (!analytics || !svgRef.current || draws.length === 0) return;
-
-    animateChart();
-  }, [analytics]);
-
-  const animateChart = () => {
+  const animateChart = useCallback(() => {
     if (!svgRef.current || isAnimating) return;
 
     setIsAnimating(true);
@@ -107,7 +94,20 @@ export const CRSTrendChart: React.FC<CRSTrendChartProps> = ({
     }
 
     setIsAnimating(false);
-  };
+  }, [draws, analytics, height, isAnimating, showPrediction]);
+
+  useEffect(() => {
+    if (draws && draws.length > 0) {
+      const analyticsData = calculateCRSTrends(draws);
+      setAnalytics(analyticsData);
+    }
+  }, [draws]);
+
+  useEffect(() => {
+    if (!analytics || !svgRef.current || draws.length === 0) return;
+
+    animateChart();
+  }, [analytics, animateChart, draws.length]);
 
   const drawAxes = (group: SVGGElement, width: number, chartHeight: number) => {
     // Y-axis

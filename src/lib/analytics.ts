@@ -572,15 +572,18 @@ const detectTimingOutliers = (draws: ParsedExpressEntryDraw[]): OutlierData[] =>
 
   return gaps
     .filter(({ gap }) => Math.abs(gap - avgGap) > 2 * stdDev)
-    .map(({ draw, gap }) => ({
-      drawNumber: draw.drawNumber,
-      type: 'timing' as const,
-      severity: (Math.abs(gap - avgGap) > 3 * stdDev ? 'high' : 'medium') as const,
-      description: `Unusual gap of ${Math.round(gap)} days between draws`,
-      value: gap,
-      expectedValue: avgGap,
-      deviation: Math.abs(gap - avgGap) / avgGap * 100
-    }));
+    .map(({ draw, gap }) => {
+      const severity: 'high' | 'medium' = Math.abs(gap - avgGap) > 3 * stdDev ? 'high' : 'medium';
+      return {
+        drawNumber: draw.drawNumber,
+        type: 'timing' as const,
+        severity,
+        description: `Unusual gap of ${Math.round(gap)} days between draws`,
+        value: gap,
+        expectedValue: avgGap,
+        deviation: Math.abs(gap - avgGap) / avgGap * 100
+      };
+    });
 };
 
 const groupDrawsByMonth = (draws: ParsedExpressEntryDraw[]): { [month: string]: ParsedExpressEntryDraw[] } => {

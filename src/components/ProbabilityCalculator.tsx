@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import anime from "animejs";
 import type { ParsedExpressEntryDraw } from "@/types/express-entry";
 import { 

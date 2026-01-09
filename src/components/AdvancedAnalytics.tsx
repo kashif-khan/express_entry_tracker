@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { ParsedExpressEntryDraw } from "@/types/express-entry";
 import {
   detectOutliers,
@@ -51,13 +51,7 @@ export const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
   const [alertThreshold, setAlertThreshold] = useState(20); // CRS points threshold
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
 
-  useEffect(() => {
-    if (draws && draws.length > 0) {
-      performAdvancedAnalysis();
-    }
-  }, [draws, userCRS, alertThreshold]);
-
-  const performAdvancedAnalysis = () => {
+  const performAdvancedAnalysis = useCallback(() => {
     // Detect outliers
     const detectedOutliers = detectOutliers(draws);
     setOutliers(detectedOutliers);
@@ -73,7 +67,13 @@ export const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
     // Generate alerts
     const generatedAlerts = generateRealTimeAlerts(draws, detectedOutliers, patterns);
     setAlerts(generatedAlerts);
-  };
+  }, [draws, userCRS, alertThreshold]);
+
+  useEffect(() => {
+    if (draws && draws.length > 0) {
+      performAdvancedAnalysis();
+    }
+  }, [draws, performAdvancedAnalysis]);
 
   const calculateCorrelations = (draws: ParsedExpressEntryDraw[]): CorrelationData[] => {
     const correlations: CorrelationData[] = [];
