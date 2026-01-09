@@ -59,7 +59,8 @@ export const DistributionHeatMap: React.FC<DistributionHeatMapProps> = ({
 
   const generateHeatMapData = () => {
     const data: HeatMapCell[] = [];
-    const drawsByMonthScore = new Map<string, { count: number; totalDraws: number }>();
+    const drawsByMonthScore = new Map<string, number>();
+    const drawsByMonth = new Map<string, number>();
 
     // Group draws by month and score range
     draws.forEach(draw => {
@@ -67,23 +68,15 @@ export const DistributionHeatMap: React.FC<DistributionHeatMapProps> = ({
       const month = months[drawDate.getMonth()];
       const score = draw.drawCRS;
 
+      // Track total draws per month
+      drawsByMonth.set(month, (drawsByMonth.get(month) || 0) + 1);
+
+      // Track draws by score range for each month
       scoreRanges.forEach(range => {
         if (score >= range.min && score <= range.max) {
           const key = `${month}-${range.label}`;
-          const existing = drawsByMonthScore.get(key) || { count: 0, totalDraws: 0 };
-          drawsByMonthScore.set(key, {
-            count: existing.count + 1,
-            totalDraws: existing.totalDraws + 1
-          });
+          drawsByMonthScore.set(key, (drawsByMonthScore.get(key) || 0) + 1);
         }
-      });
-
-      // Track total draws per month for percentage calculation
-      const monthKey = `${month}-total`;
-      const monthTotal = drawsByMonthScore.get(monthKey) || { count: 0, totalDraws: 0 };
-      drawsByMonthScore.set(monthKey, {
-        count: monthTotal.count,
-        totalDraws: monthTotal.totalDraws + 1
       });
     });
 
@@ -91,17 +84,15 @@ export const DistributionHeatMap: React.FC<DistributionHeatMapProps> = ({
     months.forEach(month => {
       scoreRanges.forEach(range => {
         const key = `${month}-${range.label}`;
-        const monthTotalKey = `${month}-total`;
-        const cellData = drawsByMonthScore.get(key) || { count: 0, totalDraws: 0 };
-        const monthTotal = drawsByMonthScore.get(monthTotalKey)?.totalDraws || 1;
-        
-        const percentage = (cellData.count / monthTotal) * 100;
+        const count = drawsByMonthScore.get(key) || 0;
+        const monthTotal = drawsByMonth.get(month) || 0;
+        const percentage = monthTotal > 0 ? (count / monthTotal) * 100 : 0;
         
         data.push({
           scoreRange: range.label,
           month,
           value: Math.min(percentage / 20, 1), // Normalize for color intensity (0-1)
-          count: cellData.count,
+          count: count,
           percentage: Math.round(percentage * 10) / 10
         });
       });
@@ -183,7 +174,7 @@ export const DistributionHeatMap: React.FC<DistributionHeatMapProps> = ({
 
       <div className="overflow-x-auto">
         <div className="inline-block min-w-full">
-          {/* Header with months */}
+          {/* Header with months - Fixed alignment */}
           <div className="grid gap-1 mb-2" style={{ gridTemplateColumns: "120px repeat(12, 48px)" }}>
             <div className="text-sm font-medium text-gray-600 text-right pr-2 flex items-center">
               Score Range
@@ -195,7 +186,7 @@ export const DistributionHeatMap: React.FC<DistributionHeatMapProps> = ({
             ))}
           </div>
 
-          {/* Heat map grid */}
+          {/* Heat map grid - Fixed alignment */}
           <div ref={containerRef} className="space-y-1">
             {scoreRanges.map(range => (
               <div key={range.label} className="grid gap-1" style={{ gridTemplateColumns: "120px repeat(12, 48px)" }}>
@@ -232,6 +223,24 @@ export const DistributionHeatMap: React.FC<DistributionHeatMapProps> = ({
                 })}
               </div>
             ))}
+          </div>
+
+          {/* Monthly totals for verification */}
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+            <h4 className="text-sm font-medium text-gray-700 mb-2">Monthly Draw Totals:</h4>
+            <div className="grid grid-cols-6 md:grid-cols-12 gap-2 text-xs">
+              {months.map(month => {
+                const monthTotal = heatMapData
+                  .filter(cell => cell.month === month)
+                  .reduce((sum, cell) => sum + cell.count, 0);
+                return (
+                  <div key={month} className="text-center">
+                    <div className="font-medium text-gray-600">{month}</div>
+                    <div className="font-bold text-blue-600">{monthTotal}</div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           {/* Legend */}
@@ -283,20 +292,22 @@ export const DistributionHeatMap: React.FC<DistributionHeatMapProps> = ({
       <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-blue-50 p-3 rounded text-center">
           <div className="text-2xl font-bold text-blue-600">
-            {Math.max(...heatMapData.map(cell => cell.count))}
+            {heatMapData.length > 0 ? Math.max(...heatMapData.map(cell => cell.count)) : 0}
           </div>
           <div className="text-sm text-gray-600">Peak Month Activity</div>
         </div>
         <div className="bg-green-50 p-3 rounded text-center">
           <div className="text-2xl font-bold text-green-600">
-            {scoreRanges.find(range => {
-              const maxCount = Math.max(...heatMapData
-                .filter(cell => cell.scoreRange === range.label)
-                .map(cell => cell.count));
-              return heatMapData.some(cell => 
-                cell.scoreRange === range.label && cell.count === maxCount
-              );
-            })?.label || "N/A"}
+            {heatMapData.length > 0 ? (
+              scoreRanges.find(range => {
+                const maxCount = Math.max(...heatMapData
+                  .filter(cell => cell.scoreRange === range.label)
+                  .map(cell => cell.count));
+                return heatMapData.some(cell => 
+                  cell.scoreRange === range.label && cell.count === maxCount
+                );
+              })?.label || "N/A"
+            ) : "N/A"}
           </div>
           <div className="text-sm text-gray-600">Most Active Range</div>
         </div>
@@ -308,10 +319,12 @@ export const DistributionHeatMap: React.FC<DistributionHeatMapProps> = ({
         </div>
         <div className="bg-purple-50 p-3 rounded text-center">
           <div className="text-2xl font-bold text-purple-600">
-            {Math.round(
-              heatMapData.reduce((sum, cell) => sum + cell.percentage, 0) / 
-              heatMapData.filter(cell => cell.count > 0).length * 10
-            ) / 10 || 0}%
+            {heatMapData.length > 0 ? (
+              Math.round(
+                heatMapData.reduce((sum, cell) => sum + cell.percentage, 0) / 
+                heatMapData.filter(cell => cell.count > 0).length * 10
+              ) / 10 || 0
+            ) : 0}%
           </div>
           <div className="text-sm text-gray-600">Average Distribution</div>
         </div>
