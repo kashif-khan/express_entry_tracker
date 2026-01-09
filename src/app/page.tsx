@@ -3,6 +3,7 @@
 import { useDraws } from "@/hooks/useDraws";
 import { DataTable } from "@/components/DataTable";
 import { StatisticsGrid } from "@/components/AnimatedStats";
+import { AnalyticsDashboard } from "@/components/AnalyticsDashboard";
 import {
   TimelineFilter,
   type TimelineFilterState,
@@ -358,7 +359,20 @@ export default function HomePage() {
                 />
               </section>
             )}
-
+            {/* Advanced Analytics Dashboard */}
+            {filteredDraws.length > 0 && (
+              <section className="mb-8" data-testid="analytics-section">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                  📊 Advanced Analytics
+                  {timelineFilter.start || timelineFilter.end ? (
+                    <span className="text-sm font-normal text-blue-600 bg-blue-50 px-2 py-1 rounded-md">
+                      (Filtered)
+                    </span>
+                  ) : null}
+                </h2>
+                <AnalyticsDashboard draws={filteredDraws} />
+              </section>
+            )}
             {/* Comprehensive Data Table */}
             {filteredDraws.length > 0 && (
               <section className="mb-8" data-testid="table-section">
