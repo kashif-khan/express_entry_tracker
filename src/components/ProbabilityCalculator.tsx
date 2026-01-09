@@ -193,7 +193,7 @@ export const ProbabilityCalculator: React.FC<ProbabilityCalculatorProps> = ({
             className={`p-6 rounded-lg border-l-4 ${
               probabilityResult.currentProbability >= 60 ? "border-green-500" : "border-red-500"
             } ${getProbabilityBackground(probabilityResult.currentProbability)}`}
-            ref={(el) => el && animateResult(el)}
+            ref={(el) => { if (el) animateResult(el); }}
           >
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-lg font-semibold text-gray-800">
