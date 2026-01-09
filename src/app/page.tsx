@@ -290,13 +290,39 @@ export default function HomePage() {
           <>
             {/* Latest Draw Highlight - Mobile First */}
             {filteredLatestDraw && (
-              <section className="mb-8 md:order-2" data-testid="latest-draw-section">
+              <section 
+                className="mb-8 md:order-2" 
+                data-testid="latest-draw-section"
+                id={`draw-${filteredLatestDraw.drawNumber}`}
+              >
                 <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg p-4 sm:p-6 shadow-lg">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg sm:text-xl font-semibold">Latest Draw</h2>
-                    <span className="bg-white/20 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm">
-                      Draw #{filteredLatestDraw.drawNumber}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-white/20 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm">
+                        Draw #{filteredLatestDraw.drawNumber}
+                      </span>
+                      <a
+                        href={`#draw-${filteredLatestDraw.drawNumber}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const shareUrl = `${window.location.origin}${window.location.pathname}#draw-${filteredLatestDraw.drawNumber}`;
+                          navigator.clipboard?.writeText(shareUrl).then(() => {
+                            // You could add a toast notification here
+                            console.log('Link copied to clipboard:', shareUrl);
+                          }).catch(() => {
+                            // Fallback: select the URL for manual copying
+                            prompt('Copy this link:', shareUrl);
+                          });
+                        }}
+                        className="bg-white/20 hover:bg-white/30 p-2 rounded-full transition-colors duration-200 group"
+                        title="Copy shareable link to this draw"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                      </a>
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                     <div>
