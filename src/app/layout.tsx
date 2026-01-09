@@ -5,17 +5,18 @@ export const metadata = {
   title: "Express Entry Tracker",
   description: "Track IRCC Express Entry draws and statistics",
   manifest: "/manifest.json",
-  themeColor: "#3b82f6",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "Express Entry Tracker",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-  },
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#3b82f6",
 };
 
 export default function RootLayout({
