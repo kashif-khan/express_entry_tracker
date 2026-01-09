@@ -28,6 +28,15 @@ export default function HomePage() {
     start: null,
     end: null,
   });
+  
+  // Detect mobile and set timeline filter collapsed state
+  const [isTimelineCollapsed, setIsTimelineCollapsed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768; // Collapsed by default on mobile (< md breakpoint)
+    }
+    return false; // Default to expanded on server
+  });
+  
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -44,6 +53,20 @@ export default function HomePage() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Handle window resize to auto-collapse/expand timeline filter based on screen size
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth < 768;
+      // Only auto-collapse on mobile, don't auto-expand on desktop to preserve user choice
+      if (isMobile && !isTimelineCollapsed) {
+        setIsTimelineCollapsed(true);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isTimelineCollapsed]);
 
   // Filter draws based on timeline
   const filteredDraws = useMemo(() => {
@@ -264,22 +287,9 @@ export default function HomePage() {
           </div>
         ) : (
           <>
-            {/* Timeline Filter */}
-            {draws.length > 0 && (
-              <section className="mb-8" data-testid="timeline-filter-section">
-                <TimelineFilter
-                  dateRange={timelineFilter}
-                  onDateRangeChange={setTimelineFilter}
-                  draws={draws}
-                  totalCount={draws.length}
-                  filteredCount={filteredDraws.length}
-                />
-              </section>
-            )}
-
-            {/* Latest Draw Highlight */}
+            {/* Latest Draw Highlight - Mobile First */}
             {filteredLatestDraw && (
-              <section className="mb-8" data-testid="latest-draw-section">
+              <section className="mb-8 md:order-2" data-testid="latest-draw-section">
                 <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg p-4 sm:p-6 shadow-lg">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg sm:text-xl font-semibold">Latest Draw</h2>
@@ -313,6 +323,21 @@ export default function HomePage() {
                     </div>
                   </div>
                 </div>
+              </section>
+            )}
+
+            {/* Timeline Filter - Desktop First */}
+            {draws.length > 0 && (
+              <section className="mb-8 md:order-1" data-testid="timeline-filter-section">
+                <TimelineFilter
+                  dateRange={timelineFilter}
+                  onDateRangeChange={setTimelineFilter}
+                  draws={draws}
+                  totalCount={draws.length}
+                  filteredCount={filteredDraws.length}
+                  isCollapsed={isTimelineCollapsed}
+                  onToggleCollapsed={() => setIsTimelineCollapsed(!isTimelineCollapsed)}
+                />
               </section>
             )}
 

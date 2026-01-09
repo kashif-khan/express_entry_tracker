@@ -17,6 +17,8 @@ interface TimelineFilterProps {
   draws: ParsedExpressEntryDraw[];
   totalCount: number;
   filteredCount: number;
+  isCollapsed?: boolean;
+  onToggleCollapsed?: () => void;
 }
 
 interface PresetRange {
@@ -31,6 +33,8 @@ export function TimelineFilter({
   draws,
   totalCount,
   filteredCount,
+  isCollapsed = false,
+  onToggleCollapsed,
 }: TimelineFilterProps) {
   // Calculate date boundaries from available data
   const getDataDateRange = () => {
@@ -197,17 +201,45 @@ export function TimelineFilter({
 
   return (
     <section className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200">
+      {/* Header with toggle */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4 sm:mb-6">
-        <h2 className="text-base sm:text-lg font-semibold text-gray-900">Timeline Filter</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900">Timeline Filter</h2>
+          {onToggleCollapsed && (
+            <button
+              onClick={onToggleCollapsed}
+              className="p-1 hover:bg-gray-100 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 md:hidden"
+              aria-label={isCollapsed ? "Expand timeline filter" : "Collapse timeline filter"}
+            >
+              <svg
+                className={`w-4 h-4 transition-transform text-gray-500 ${
+                  isCollapsed ? "" : "rotate-180"
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
         <div className="text-xs sm:text-sm text-gray-500">
           Showing {filteredCount.toLocaleString()} of{" "}
           {totalCount.toLocaleString()} draws
         </div>
       </div>
 
-      {/* Preset Buttons */}
-      <div className="mb-4">
-        <div className="flex flex-wrap gap-2">
+      {/* Collapsible content */}
+      <div className={`${isCollapsed ? "hidden md:block" : "block"}`}>
+        {/* Preset Buttons */}
+        <div className="mb-4">
+          <div className="flex flex-wrap gap-2">
           {presets.map((preset) => (
             <button
               key={preset.label}
@@ -314,7 +346,8 @@ export function TimelineFilter({
             </span>
           </div>
         </div>
-      )}
+      )} 
+      </div>
     </section>
   );
 }
