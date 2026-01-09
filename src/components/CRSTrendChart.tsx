@@ -92,17 +92,19 @@ export const CRSTrendChart: React.FC<CRSTrendChartProps> = ({
     drawDataPoints(chartGroup, dataPoints);
 
     // Draw moving average if available
-    if (analytics.trends.movingAverage.length > 0) {
+    if (analytics && analytics.trends.movingAverage.length > 0) {
       drawMovingAverage(chartGroup, analytics.trends.movingAverage, width, chartHeight);
     }
 
     // Draw prediction if enabled
-    if (showPrediction && analytics.trends.prediction.nextDraw > 0) {
+    if (showPrediction && analytics && analytics.trends.prediction.nextDraw > 0) {
       drawPrediction(chartGroup, dataPoints, analytics.trends.prediction, width, chartHeight);
     }
 
     // Add percentile bands
-    drawPercentileBands(chartGroup, analytics.trends.percentileRanges, width, chartHeight);
+    if (analytics && analytics.trends.percentileRanges) {
+      drawPercentileBands(chartGroup, analytics.trends.percentileRanges, width, chartHeight);
+    }
 
     setIsAnimating(false);
   };
