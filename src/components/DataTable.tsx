@@ -558,7 +558,7 @@ export function DataTable({ data, className = "" }: DataTableProps) {
             <span className="text-xs sm:text-sm text-gray-600 order-2 sm:order-1" aria-live="polite">
               Showing {startRecord}-{endRecord} of {pagination.total} draws
             </span>
-            <label className="flex items-center gap-2 order-1 sm:order-2 w-full sm:w-auto">
+            <label className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 order-1 sm:order-2 w-full sm:w-auto">
               <span className="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">
                 Rows per page:
               </span>
@@ -569,7 +569,7 @@ export function DataTable({ data, className = "" }: DataTableProps) {
                     e.target.value === "all" ? "all" : parseInt(e.target.value),
                   )
                 }
-                className="border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 flex-1 sm:flex-initial"
+                className="w-full sm:w-24 border border-gray-300 rounded-md px-3 py-2.5 sm:py-2 text-sm bg-white text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 shadow-sm min-h-[44px] sm:min-h-0 transition-colors"
                 aria-describedby={`${filterRegionId}-rows-desc`}
               >
                 {CONFIG.TABLE.PAGE_SIZE_OPTIONS.map((option) => (
@@ -777,7 +777,7 @@ export function DataTable({ data, className = "" }: DataTableProps) {
             <button
               onClick={() => handlePageChange(1)}
               disabled={pagination.page === 1}
-              className="px-4 py-2.5 sm:py-2 text-xs sm:text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 min-h-[44px] sm:min-h-0"
+              className="px-4 py-2.5 sm:py-2 text-sm bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 focus:outline-none min-h-[44px] sm:min-h-0 shadow-sm transition-colors"
               aria-label="Go to first page"
             >
               First
@@ -785,7 +785,7 @@ export function DataTable({ data, className = "" }: DataTableProps) {
             <button
               onClick={() => handlePageChange(pagination.page - 1)}
               disabled={pagination.page === 1}
-              className="px-4 py-2.5 sm:py-2 text-xs sm:text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 min-h-[44px] sm:min-h-0"
+              className="px-4 py-2.5 sm:py-2 text-sm bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 focus:outline-none min-h-[44px] sm:min-h-0 shadow-sm transition-colors"
               aria-label="Go to previous page"
             >
               Previous
@@ -793,7 +793,7 @@ export function DataTable({ data, className = "" }: DataTableProps) {
           </div>
 
           <div
-            className="flex items-center gap-1 sm:gap-1 justify-center"
+            className="flex items-center gap-1 sm:gap-2 justify-center overflow-x-auto max-w-full"
             role="group"
             aria-label="Page numbers"
           >
@@ -804,10 +804,10 @@ export function DataTable({ data, className = "" }: DataTableProps) {
                 <button
                   key={pageNum}
                   onClick={() => handlePageChange(pageNum)}
-                  className={`px-3 py-2.5 sm:py-2 text-xs sm:text-sm border rounded focus:ring-2 focus:ring-blue-500 min-h-[44px] sm:min-h-0 ${
+                  className={`min-w-[44px] px-3 py-2.5 sm:py-2 text-sm border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors min-h-[44px] sm:min-h-0 shrink-0 ${
                     pageNum === pagination.page
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "hover:bg-gray-50"
+                      ? "bg-blue-600 text-white border-blue-600 shadow-sm hover:bg-blue-700"
+                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400"
                   }`}
                   aria-label={`Go to page ${pageNum}`}
                   aria-current={
@@ -824,7 +824,7 @@ export function DataTable({ data, className = "" }: DataTableProps) {
             <button
               onClick={() => handlePageChange(pagination.page + 1)}
               disabled={pagination.page === totalPages}
-              className="px-4 py-2.5 sm:py-2 text-xs sm:text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 min-h-[44px] sm:min-h-0"
+              className="px-4 py-2.5 sm:py-2 text-sm bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 focus:outline-none min-h-[44px] sm:min-h-0 shadow-sm transition-colors"
               aria-label="Go to next page"
             >
               Next
@@ -832,7 +832,7 @@ export function DataTable({ data, className = "" }: DataTableProps) {
             <button
               onClick={() => handlePageChange(totalPages)}
               disabled={pagination.page === totalPages}
-              className="px-4 py-2.5 sm:py-2 text-xs sm:text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 min-h-[44px] sm:min-h-0"
+              className="px-4 py-2.5 sm:py-2 text-sm bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 focus:outline-none min-h-[44px] sm:min-h-0 shadow-sm transition-colors"
               aria-label="Go to last page"
             >
               Last
@@ -1055,7 +1055,7 @@ function HeaderFilterInput({
       {/* Dropdown */}
       {isOpen && (
         <div
-          className="absolute z-50 mt-1 left-0 right-0 sm:left-auto sm:right-auto sm:w-64 bg-white border border-gray-300 rounded-md shadow-lg max-h-80 overflow-hidden"
+          className="absolute z-50 mt-1 left-0 right-0 sm:left-auto sm:right-auto sm:w-72 min-w-64 max-w-sm bg-white border border-gray-300 rounded-md shadow-lg max-h-80 overflow-hidden"
           role="listbox"
           id={listboxId}
           aria-labelledby={inputId}
