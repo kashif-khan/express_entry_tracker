@@ -1,7 +1,7 @@
 const CACHE_NAME = 'express-entry-tracker-v1';
 const urlsToCache = [
-  '/',
-  '/globals.css',
+  // Start with empty cache - will be populated on-demand via fetch handler
+  // This prevents installation failures due to missing or inaccessible URLs
 ];
 
 // Install event - cache essential resources
@@ -9,7 +9,15 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        return cache.addAll(urlsToCache);
+        // Cache initial URLs if any exist, but don't fail if they don't
+        if (urlsToCache.length > 0) {
+          return cache.addAll(urlsToCache).catch((err) => {
+            console.warn('Failed to cache some URLs during install:', err);
+            // Continue installation even if caching fails
+            return Promise.resolve();
+          });
+        }
+        return Promise.resolve();
       })
       .then(() => self.skipWaiting())
   );

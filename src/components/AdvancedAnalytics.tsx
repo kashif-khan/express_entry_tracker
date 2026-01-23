@@ -295,10 +295,10 @@ export const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
   return (
     <div className={`space-y-6 ${className}`}>
       {/* Real-time Alerts */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold text-gray-800">Real-time Alerts</h3>
-          <div className="flex items-center space-x-4">
+      <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+        <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 mb-4">
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-800">Real-time Alerts</h3>
+          <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
@@ -331,22 +331,22 @@ export const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
               alerts.map((alert) => (
                 <div
                   key={alert.id}
-                  className={`p-4 rounded-lg border cursor-pointer hover:shadow-md transition-shadow ${getAlertColor(alert.type)}`}
+                  className={`p-3 sm:p-4 rounded-lg border cursor-pointer hover:shadow-md transition-shadow ${getAlertColor(alert.type)}`}
                   onClick={() => setSelectedAlert(alert)}
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-3">
-                      <span className="text-lg">{getAlertIcon(alert.type)}</span>
-                      <div>
-                        <h4 className="font-medium">{alert.title}</h4>
-                        <p className="text-sm opacity-80">{alert.message}</p>
+                  <div className="flex flex-col space-y-2 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+                    <div className="flex items-start space-x-3 flex-1 min-w-0">
+                      <span className="text-lg flex-shrink-0">{getAlertIcon(alert.type)}</span>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-sm sm:text-base">{alert.title}</h4>
+                        <p className="text-xs sm:text-sm opacity-80 break-words">{alert.message}</p>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-1 text-xs rounded-full ${getSeverityBadge(alert.severity)}`}>
+                    <div className="flex items-center justify-between sm:justify-end space-x-2 sm:flex-col sm:items-end sm:space-x-0 sm:space-y-1">
+                      <span className={`px-2 py-1 text-xs rounded-full whitespace-nowrap ${getSeverityBadge(alert.severity)}`}>
                         {alert.severity.toUpperCase()}
                       </span>
-                      <span className="text-xs opacity-60">
+                      <span className="text-xs opacity-60 whitespace-nowrap">
                         {alert.timestamp.toLocaleTimeString()}
                       </span>
                     </div>
@@ -364,25 +364,25 @@ export const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
       </div>
 
       {/* Correlation Analysis */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">Correlation Analysis</h3>
+      <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+        <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">Correlation Analysis</h3>
         <div className="space-y-4">
           {correlations.map((corr, index) => (
-            <div key={index} className="p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="font-medium text-gray-800">
+            <div key={index} className="p-3 sm:p-4 bg-gray-50 rounded-lg">
+              <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 mb-2">
+                <h4 className="font-medium text-sm sm:text-base text-gray-800">
                   {corr.metric1} vs {corr.metric2}
                 </h4>
                 <div className="flex items-center space-x-2">
-                  <span className={`font-bold ${getCorrelationColor(corr.correlation)}`}>
+                  <span className={`font-bold text-sm sm:text-base ${getCorrelationColor(corr.correlation)}`}>
                     {corr.correlation > 0 ? '+' : ''}{corr.correlation.toFixed(3)}
                   </span>
-                  <span className="text-sm text-gray-600">
+                  <span className="text-xs sm:text-sm text-gray-600">
                     ({getCorrelationStrength(corr.correlation)})
                   </span>
                 </div>
               </div>
-              <p className="text-sm text-gray-600">{corr.description}</p>
+              <p className="text-xs sm:text-sm text-gray-600 break-words">{corr.description}</p>
               <div className="mt-2">
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
@@ -401,14 +401,14 @@ export const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
       </div>
 
       {/* Outlier Detection */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">Outlier Detection</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+        <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">Outlier Detection</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {outliers.slice(0, 6).map((outlier) => (
-            <div key={`${outlier.drawNumber}-${outlier.type}`} className="p-4 border border-gray-200 rounded-lg">
+            <div key={`${outlier.drawNumber}-${outlier.type}`} className="p-3 sm:p-4 border border-gray-200 rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-medium text-gray-800">Draw #{outlier.drawNumber}</span>
-                <span className={`px-2 py-1 text-xs rounded-full ${
+                <span className="font-medium text-sm sm:text-base text-gray-800">Draw #{outlier.drawNumber}</span>
+                <span className={`px-2 py-1 text-xs rounded-full whitespace-nowrap ${
                   outlier.severity === 'high' ? 'bg-red-100 text-red-800' :
                   outlier.severity === 'medium' ? 'bg-yellow-100 text-yellow-800' :
                   'bg-gray-100 text-gray-800'
@@ -416,8 +416,8 @@ export const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
                   {outlier.type.toUpperCase()}
                 </span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">{outlier.description}</p>
-              <div className="text-xs text-gray-500">
+              <p className="text-xs sm:text-sm text-gray-600 mb-2 break-words">{outlier.description}</p>
+              <div className="text-xs text-gray-500 space-y-1">
                 <div>Value: {outlier.value}</div>
                 <div>Expected: ~{outlier.expectedValue.toFixed(0)}</div>
                 <div>Deviation: {outlier.deviation.toFixed(1)}%</div>
@@ -429,38 +429,39 @@ export const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
 
       {/* Selected Alert Details */}
       {selectedAlert && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-lg w-full mx-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-4 sm:p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Alert Details</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-gray-800">Alert Details</h3>
               <button
                 onClick={() => setSelectedAlert(null)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-gray-500 hover:text-gray-700 text-xl leading-none p-1"
+                aria-label="Close"
               >
                 ✕
               </button>
             </div>
-            
-            <div className={`p-4 rounded-lg mb-4 ${getAlertColor(selectedAlert.type)}`}>
+
+            <div className={`p-3 sm:p-4 rounded-lg mb-4 ${getAlertColor(selectedAlert.type)}`}>
               <div className="flex items-start space-x-3">
-                <span className="text-lg">{getAlertIcon(selectedAlert.type)}</span>
-                <div>
-                  <h4 className="font-medium">{selectedAlert.title}</h4>
-                  <p className="text-sm opacity-80 mt-1">{selectedAlert.message}</p>
+                <span className="text-lg flex-shrink-0">{getAlertIcon(selectedAlert.type)}</span>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-sm sm:text-base">{selectedAlert.title}</h4>
+                  <p className="text-xs sm:text-sm opacity-80 mt-1 break-words">{selectedAlert.message}</p>
                 </div>
               </div>
             </div>
 
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
+            <div className="space-y-3 text-xs sm:text-sm">
+              <div className="flex justify-between items-center">
                 <span className="text-gray-600">Severity:</span>
-                <span className={`px-2 py-1 rounded-full ${getSeverityBadge(selectedAlert.severity)}`}>
+                <span className={`px-2 py-1 rounded-full text-xs ${getSeverityBadge(selectedAlert.severity)}`}>
                   {selectedAlert.severity.toUpperCase()}
                 </span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row sm:justify-between space-y-1 sm:space-y-0">
                 <span className="text-gray-600">Timestamp:</span>
-                <span className="text-gray-800">
+                <span className="text-gray-800 break-words">
                   {selectedAlert.timestamp.toLocaleString()}
                 </span>
               </div>
@@ -474,9 +475,9 @@ export const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
 
             {selectedAlert.actionable && (
               <div className="mt-4 p-3 bg-blue-50 rounded">
-                <p className="text-sm text-blue-800">
-                  <strong>Suggested Action:</strong> Monitor upcoming draws closely and 
-                  {selectedAlert.type === 'favorable' 
+                <p className="text-xs sm:text-sm text-blue-800 break-words">
+                  <strong>Suggested Action:</strong> Monitor upcoming draws closely and
+                  {selectedAlert.type === 'favorable'
                     ? " consider submitting your profile if you haven't already."
                     : " adjust your strategy based on the trend."
                   }

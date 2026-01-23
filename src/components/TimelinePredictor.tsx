@@ -192,15 +192,15 @@ export const TimelinePredictor: React.FC<TimelinePredictorProps> = ({
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow-lg p-6 ${className}`}>
+    <div className={`bg-white rounded-lg shadow-lg p-4 sm:p-6 ${className}`}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-semibold text-gray-800">Timeline Predictor</h3>
-        <div className="flex items-center space-x-4">
+      <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 mb-4 sm:mb-6">
+        <h3 className="text-lg sm:text-xl font-semibold text-gray-800">Timeline Predictor</h3>
+        <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value as any)}
-            className="text-sm border border-gray-300 rounded px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="text-xs sm:text-sm border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="3months">Next 3 Months</option>
             <option value="6months">Next 6 Months</option>
@@ -209,16 +209,16 @@ export const TimelinePredictor: React.FC<TimelinePredictorProps> = ({
           <div className="flex rounded-lg border border-gray-300 overflow-hidden">
             <button
               onClick={() => setViewMode('timeline')}
-              className={`px-3 py-1 text-sm ${viewMode === 'timeline' 
-                ? 'bg-blue-500 text-white' 
+              className={`px-3 py-2 text-xs sm:text-sm flex-1 sm:flex-initial ${viewMode === 'timeline'
+                ? 'bg-blue-500 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-50'}`}
             >
               Timeline
             </button>
             <button
               onClick={() => setViewMode('calendar')}
-              className={`px-3 py-1 text-sm ${viewMode === 'calendar' 
-                ? 'bg-blue-500 text-white' 
+              className={`px-3 py-2 text-xs sm:text-sm flex-1 sm:flex-initial ${viewMode === 'calendar'
+                ? 'bg-blue-500 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-50'}`}
             >
               Calendar
@@ -229,67 +229,67 @@ export const TimelinePredictor: React.FC<TimelinePredictorProps> = ({
 
       {/* Analytics Summary */}
       {timingAnalytics && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
           <div className="bg-blue-50 p-3 rounded text-center">
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-xl sm:text-2xl font-bold text-blue-600">
               {timingAnalytics.frequency.averageDaysBetweenDraws.toFixed(0)}
             </div>
-            <div className="text-sm text-gray-600">Avg Days Between</div>
+            <div className="text-xs sm:text-sm text-gray-600">Avg Days Between</div>
           </div>
           <div className="bg-green-50 p-3 rounded text-center">
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-xl sm:text-2xl font-bold text-green-600">
               {timingAnalytics.frequency.shortestGap}
             </div>
-            <div className="text-sm text-gray-600">Shortest Gap</div>
+            <div className="text-xs sm:text-sm text-gray-600">Shortest Gap</div>
           </div>
           <div className="bg-yellow-50 p-3 rounded text-center">
-            <div className="text-2xl font-bold text-yellow-600">
+            <div className="text-xl sm:text-2xl font-bold text-yellow-600">
               {timingAnalytics.frequency.longestGap}
             </div>
-            <div className="text-sm text-gray-600">Longest Gap</div>
+            <div className="text-xs sm:text-sm text-gray-600">Longest Gap</div>
           </div>
           <div className="bg-purple-50 p-3 rounded text-center">
-            <div className="text-2xl font-bold text-purple-600">
+            <div className="text-xl sm:text-2xl font-bold text-purple-600">
               {formatDate(timingAnalytics.frequency.predictedNextDate).split(',')[0]}
             </div>
-            <div className="text-sm text-gray-600">Next Predicted</div>
+            <div className="text-xs sm:text-sm text-gray-600">Next Predicted</div>
           </div>
         </div>
       )}
 
       {/* Predictions Display */}
       {viewMode === 'timeline' ? (
-        <div ref={timelineRef} className="space-y-4">
+        <div ref={timelineRef} className="space-y-3 sm:space-y-4">
           {predictions.filter(isWithinRange).map((prediction, index) => (
             <div
               key={index}
               data-prediction-item
-              className={`p-4 rounded-lg border cursor-pointer transition-all duration-200 hover:shadow-md ${
+              className={`p-3 sm:p-4 rounded-lg border cursor-pointer transition-all duration-200 hover:shadow-md ${
                 getConfidenceBackground(prediction.confidence)
               }`}
               onClick={() => setSelectedPrediction(prediction)}
             >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center space-x-3">
-                  <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                  <span className="font-medium text-gray-800">
+              <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 mb-2">
+                <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-blue-500 flex-shrink-0"></div>
+                  <span className="font-medium text-sm sm:text-base text-gray-800 truncate">
                     {formatDate(prediction.date)}
                   </span>
-                  <span className="text-sm text-gray-600">
+                  <span className="text-xs sm:text-sm text-gray-600 whitespace-nowrap">
                     {prediction.category}
                   </span>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <span className="text-lg font-semibold text-gray-800">
+                <div className="flex items-center justify-between sm:justify-end space-x-2 sm:space-x-3">
+                  <span className="text-base sm:text-lg font-semibold text-gray-800 whitespace-nowrap">
                     CRS: {prediction.estimatedCRS}
                   </span>
-                  <span className={`text-sm font-medium ${getConfidenceColor(prediction.confidence)}`}>
-                    {Math.round(prediction.confidence * 100)}% confidence
+                  <span className={`text-xs sm:text-sm font-medium whitespace-nowrap ${getConfidenceColor(prediction.confidence)}`}>
+                    {Math.round(prediction.confidence * 100)}%
                   </span>
                 </div>
               </div>
-              
-              <div className="text-sm text-gray-600">
+
+              <div className="text-xs sm:text-sm text-gray-600 break-words">
                 {prediction.reasoning[0]}
               </div>
             </div>
@@ -307,39 +307,39 @@ export const TimelinePredictor: React.FC<TimelinePredictorProps> = ({
 
       {/* Selected Prediction Details */}
       {selectedPrediction && (
-        <div className="mt-6 p-6 bg-gray-50 rounded-lg">
-          <h4 className="text-lg font-semibold text-gray-800 mb-4">
+        <div className="mt-4 sm:mt-6 p-4 sm:p-6 bg-gray-50 rounded-lg">
+          <h4 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 break-words">
             Prediction Details - {formatDate(selectedPrediction.date)}
           </h4>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-3 sm:mb-4">
             <div>
-              <span className="text-gray-600">Estimated CRS:</span>
-              <div className="text-2xl font-bold text-blue-600">
+              <span className="text-xs sm:text-sm text-gray-600">Estimated CRS:</span>
+              <div className="text-xl sm:text-2xl font-bold text-blue-600">
                 {selectedPrediction.estimatedCRS}
               </div>
             </div>
             <div>
-              <span className="text-gray-600">Confidence Level:</span>
-              <div className={`text-2xl font-bold ${getConfidenceColor(selectedPrediction.confidence)}`}>
+              <span className="text-xs sm:text-sm text-gray-600">Confidence Level:</span>
+              <div className={`text-xl sm:text-2xl font-bold ${getConfidenceColor(selectedPrediction.confidence)}`}>
                 {Math.round(selectedPrediction.confidence * 100)}%
               </div>
             </div>
             <div>
-              <span className="text-gray-600">Program:</span>
-              <div className="text-lg font-semibold text-gray-800">
+              <span className="text-xs sm:text-sm text-gray-600">Program:</span>
+              <div className="text-base sm:text-lg font-semibold text-gray-800">
                 {selectedPrediction.category}
               </div>
             </div>
           </div>
 
           <div>
-            <h5 className="font-medium text-gray-800 mb-2">Analysis Factors:</h5>
+            <h5 className="font-medium text-sm sm:text-base text-gray-800 mb-2">Analysis Factors:</h5>
             <ul className="space-y-1">
               {selectedPrediction.reasoning.map((reason, index) => (
-                <li key={index} className="flex items-start space-x-2 text-sm text-gray-600">
+                <li key={index} className="flex items-start space-x-2 text-xs sm:text-sm text-gray-600">
                   <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                  <span>{reason}</span>
+                  <span className="break-words">{reason}</span>
                 </li>
               ))}
             </ul>
@@ -349,11 +349,11 @@ export const TimelinePredictor: React.FC<TimelinePredictorProps> = ({
 
       {/* Seasonal Insights */}
       {seasonalPatterns && seasonalPatterns.insights.length > 0 && (
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-          <h4 className="font-medium text-gray-800 mb-2">Seasonal Insights</h4>
-          <div className="text-sm text-gray-600 space-y-1">
+        <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-blue-50 rounded-lg">
+          <h4 className="font-medium text-sm sm:text-base text-gray-800 mb-2">Seasonal Insights</h4>
+          <div className="text-xs sm:text-sm text-gray-600 space-y-1">
             {seasonalPatterns.insights.map((insight: string, index: number) => (
-              <div key={index}>• {insight}</div>
+              <div key={index} className="break-words">• {insight}</div>
             ))}
           </div>
         </div>
@@ -361,14 +361,14 @@ export const TimelinePredictor: React.FC<TimelinePredictorProps> = ({
 
       {/* Outlier Alerts */}
       {outliers.length > 0 && (
-        <div className="mt-6 p-4 bg-orange-50 rounded-lg border border-orange-200">
-          <h4 className="font-medium text-gray-800 mb-2 flex items-center">
-            <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
+        <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-orange-50 rounded-lg border border-orange-200">
+          <h4 className="font-medium text-sm sm:text-base text-gray-800 mb-2 flex items-center">
+            <span className="w-2 h-2 bg-orange-500 rounded-full mr-2 flex-shrink-0"></span>
             Recent Unusual Activity
           </h4>
-          <div className="text-sm text-gray-600">
+          <div className="text-xs sm:text-sm text-gray-600 space-y-1">
             {outliers.slice(0, 3).map((outlier, index) => (
-              <div key={index} className="mb-1">
+              <div key={index} className="break-words">
                 Draw #{outlier.drawNumber}: {outlier.description}
               </div>
             ))}
@@ -377,11 +377,11 @@ export const TimelinePredictor: React.FC<TimelinePredictorProps> = ({
       )}
 
       {/* Disclaimer */}
-      <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-        <p className="text-xs text-gray-500">
-          <strong>Disclaimer:</strong> These predictions are based on historical patterns and 
-          statistical analysis. Actual draw dates and CRS scores may vary due to policy changes, 
-          seasonal factors, and other variables not captured in historical data. Use these 
+      <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gray-50 rounded-lg">
+        <p className="text-xs sm:text-sm text-gray-500 break-words">
+          <strong>Disclaimer:</strong> These predictions are based on historical patterns and
+          statistical analysis. Actual draw dates and CRS scores may vary due to policy changes,
+          seasonal factors, and other variables not captured in historical data. Use these
           predictions as guidance only.
         </p>
       </div>

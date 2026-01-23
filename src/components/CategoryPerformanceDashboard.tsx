@@ -118,7 +118,10 @@ export const CategoryPerformanceDashboard: React.FC<CategoryPerformanceDashboard
 
       const scores = categoryDraws.map(d => d.drawCRS).filter(Boolean);
       const sizes = categoryDraws.map(d => d.drawSize).filter(Boolean);
-      
+
+      // Skip categories with no valid data
+      if (scores.length === 0 || sizes.length === 0) return;
+
       // Calculate basic stats
       const averageCRS = scores.reduce((sum, score) => sum + score, 0) / scores.length;
       const lowestCRS = Math.min(...scores);
@@ -255,15 +258,15 @@ export const CategoryPerformanceDashboard: React.FC<CategoryPerformanceDashboard
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow-lg p-6 ${className}`}>
+    <div className={`bg-white rounded-lg shadow-lg p-4 sm:p-6 ${className}`}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-semibold text-gray-800">Category Performance Dashboard</h3>
-        <div className="flex items-center space-x-4">
+      <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 mb-4 sm:mb-6">
+        <h3 className="text-lg sm:text-xl font-semibold text-gray-800">Category Performance Dashboard</h3>
+        <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="text-sm border border-gray-300 rounded px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="text-xs sm:text-sm border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="frequency">Sort by Frequency</option>
             <option value="average">Sort by Avg CRS</option>
@@ -272,16 +275,16 @@ export const CategoryPerformanceDashboard: React.FC<CategoryPerformanceDashboard
           <div className="flex rounded-lg border border-gray-300 overflow-hidden">
             <button
               onClick={() => setViewMode('overview')}
-              className={`px-3 py-1 text-sm ${viewMode === 'overview' 
-                ? 'bg-blue-500 text-white' 
+              className={`px-3 py-2 text-xs sm:text-sm flex-1 sm:flex-initial ${viewMode === 'overview'
+                ? 'bg-blue-500 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-50'}`}
             >
               Overview
             </button>
             <button
               onClick={() => setViewMode('detailed')}
-              className={`px-3 py-1 text-sm ${viewMode === 'detailed' 
-                ? 'bg-blue-500 text-white' 
+              className={`px-3 py-2 text-xs sm:text-sm flex-1 sm:flex-initial ${viewMode === 'detailed'
+                ? 'bg-blue-500 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-50'}`}
             >
               Detailed
@@ -296,59 +299,59 @@ export const CategoryPerformanceDashboard: React.FC<CategoryPerformanceDashboard
           <div
             key={category.shortName}
             data-category-card
-            className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200 cursor-pointer"
+            className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow duration-200 cursor-pointer"
             onClick={() => setSelectedCategory(category)}
             style={{ opacity: 0, transform: 'translateY(50px)' }}
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-3">
+            <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 mb-3 sm:mb-4">
+              <div className="flex items-center space-x-2 sm:space-x-3">
                 <div
-                  className="w-4 h-4 rounded"
+                  className="w-3 h-3 sm:w-4 sm:h-4 rounded flex-shrink-0"
                   style={{ backgroundColor: category.color }}
                 ></div>
-                <h4 className="text-lg font-semibold text-gray-800">
+                <h4 className="text-base sm:text-lg font-semibold text-gray-800 truncate">
                   {viewMode === 'overview' ? category.shortName : category.name}
                 </h4>
-                <span className={`text-sm ${getTrendColor(category.trend)}`}>
+                <span className={`text-xs sm:text-sm whitespace-nowrap ${getTrendColor(category.trend)}`}>
                   {getTrendIcon(category.trend)} {Math.abs(category.trendValue)}
                 </span>
               </div>
-              <div className="text-sm text-gray-500">
+              <div className="text-xs sm:text-sm text-gray-500 whitespace-nowrap">
                 Last: {formatLastDraw(category.lastDraw)}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-3 sm:mb-4">
               <div className="text-center">
-                <div className="text-2xl font-bold" style={{ color: category.color }}>
+                <div className="text-lg sm:text-2xl font-bold" style={{ color: category.color }}>
                   {category.averageCRS}
                 </div>
-                <div className="text-sm text-gray-600">Avg CRS</div>
+                <div className="text-xs sm:text-sm text-gray-600">Avg CRS</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-gray-800">
+                <div className="text-lg sm:text-2xl font-bold text-gray-800">
                   {category.totalDraws}
                 </div>
-                <div className="text-sm text-gray-600">Total Draws</div>
+                <div className="text-xs sm:text-sm text-gray-600">Total Draws</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-gray-800">
+                <div className="text-lg sm:text-2xl font-bold text-gray-800">
                   {category.frequency}
                 </div>
-                <div className="text-sm text-gray-600">Per Month</div>
+                <div className="text-xs sm:text-sm text-gray-600">Per Month</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-gray-800">
+                <div className="text-lg sm:text-2xl font-bold text-gray-800">
                   {(category.totalInvitations / 1000).toFixed(0)}k
                 </div>
-                <div className="text-sm text-gray-600">Invitations</div>
+                <div className="text-xs sm:text-sm text-gray-600">Invitations</div>
               </div>
             </div>
 
             {/* Progress bars for comparison */}
             <div className="space-y-2">
               <div>
-                <div className="flex justify-between text-sm text-gray-600 mb-1">
+                <div className="flex justify-between text-xs sm:text-sm text-gray-600 mb-1">
                   <span>Average CRS Score</span>
                   <span>{category.averageCRS}</span>
                 </div>
@@ -357,7 +360,7 @@ export const CategoryPerformanceDashboard: React.FC<CategoryPerformanceDashboard
                     data-progress-bar
                     data-width={(category.averageCRS / getMaxValue('averageCRS')) * 100}
                     className="h-2 rounded-full"
-                    style={{ 
+                    style={{
                       backgroundColor: category.color,
                       width: '0%'
                     }}
@@ -368,7 +371,7 @@ export const CategoryPerformanceDashboard: React.FC<CategoryPerformanceDashboard
               {viewMode === 'detailed' && (
                 <>
                   <div>
-                    <div className="flex justify-between text-sm text-gray-600 mb-1">
+                    <div className="flex justify-between text-xs sm:text-sm text-gray-600 mb-1">
                       <span>Draw Frequency</span>
                       <span>{category.frequency}/month</span>
                     </div>
@@ -383,7 +386,7 @@ export const CategoryPerformanceDashboard: React.FC<CategoryPerformanceDashboard
                   </div>
 
                   <div>
-                    <div className="flex justify-between text-sm text-gray-600 mb-1">
+                    <div className="flex justify-between text-xs sm:text-sm text-gray-600 mb-1">
                       <span>Average Size</span>
                       <span>{category.averageSize.toLocaleString()}</span>
                     </div>
@@ -401,10 +404,10 @@ export const CategoryPerformanceDashboard: React.FC<CategoryPerformanceDashboard
             </div>
 
             {/* Range indicator */}
-            <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
+            <div className="mt-3 sm:mt-4 flex flex-col space-y-1 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 text-xs sm:text-sm text-gray-600">
               <span>Range: {category.lowestCRS} - {category.highestCRS}</span>
               <span className={getTrendColor(category.trend)}>
-                {category.trend === 'stable' ? 'Stable trend' : 
+                {category.trend === 'stable' ? 'Stable trend' :
                  category.trend === 'increasing' ? 'Rising scores' : 'Falling scores'}
               </span>
             </div>
@@ -414,43 +417,43 @@ export const CategoryPerformanceDashboard: React.FC<CategoryPerformanceDashboard
 
       {/* Selected Category Details */}
       {selectedCategory && (
-        <div className="mt-6 p-6 bg-gray-50 rounded-lg">
-          <h4 className="text-lg font-semibold text-gray-800 mb-4">
+        <div className="mt-4 sm:mt-6 p-4 sm:p-6 bg-gray-50 rounded-lg">
+          <h4 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4">
             {selectedCategory.name} - Detailed Analytics
           </h4>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
             <div className="bg-white p-3 rounded text-center">
-              <div className="text-2xl font-bold text-blue-600">
-                {selectedCategory.analytics.trends.percentileRanges.p50}
+              <div className="text-xl sm:text-2xl font-bold text-blue-600">
+                {selectedCategory.analytics.trends.percentileRanges.p50 || 0}
               </div>
-              <div className="text-sm text-gray-600">Median Score</div>
+              <div className="text-xs sm:text-sm text-gray-600">Median Score</div>
             </div>
             <div className="bg-white p-3 rounded text-center">
-              <div className="text-2xl font-bold text-green-600">
-                {selectedCategory.analytics.trends.lowestInLast12Months}
+              <div className="text-xl sm:text-2xl font-bold text-green-600">
+                {selectedCategory.analytics.trends.lowestInLast12Months || 0}
               </div>
-              <div className="text-sm text-gray-600">12-Month Low</div>
+              <div className="text-xs sm:text-sm text-gray-600">12-Month Low</div>
             </div>
             <div className="bg-white p-3 rounded text-center">
-              <div className="text-2xl font-bold text-yellow-600">
-                {Math.round(selectedCategory.analytics.trends.volatility)}
+              <div className="text-xl sm:text-2xl font-bold text-yellow-600">
+                {Math.round(selectedCategory.analytics.trends.volatility) || 0}
               </div>
-              <div className="text-sm text-gray-600">Score Volatility</div>
+              <div className="text-xs sm:text-sm text-gray-600">Score Volatility</div>
             </div>
             <div className="bg-white p-3 rounded text-center">
-              <div className="text-2xl font-bold text-purple-600">
-                {selectedCategory.analytics.trends.prediction.nextDraw}
+              <div className="text-xl sm:text-2xl font-bold text-purple-600">
+                {selectedCategory.analytics.trends.prediction.nextDraw || 0}
               </div>
-              <div className="text-sm text-gray-600">Predicted Next</div>
+              <div className="text-xs sm:text-sm text-gray-600">Predicted Next</div>
             </div>
           </div>
 
-          <div className="text-sm text-gray-600">
-            <p>
-              <strong>Analysis:</strong> {selectedCategory.name} has conducted {selectedCategory.totalDraws} draws 
-              with an average frequency of {selectedCategory.frequency} draws per month. The category shows a {selectedCategory.trend} trend 
-              with scores {selectedCategory.trend === 'increasing' ? 'rising' : selectedCategory.trend === 'decreasing' ? 'falling' : 'remaining stable'} 
+          <div className="text-xs sm:text-sm text-gray-600">
+            <p className="break-words">
+              <strong>Analysis:</strong> {selectedCategory.name} has conducted {selectedCategory.totalDraws} draws
+              with an average frequency of {selectedCategory.frequency} draws per month. The category shows a {selectedCategory.trend} trend
+              with scores {selectedCategory.trend === 'increasing' ? 'rising' : selectedCategory.trend === 'decreasing' ? 'falling' : 'remaining stable'}
               by approximately {Math.abs(selectedCategory.trendValue)} points over recent draws.
             </p>
           </div>
@@ -458,30 +461,32 @@ export const CategoryPerformanceDashboard: React.FC<CategoryPerformanceDashboard
       )}
 
       {/* Summary Statistics */}
-      <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+      <div className="mt-4 sm:mt-6 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-center">
         <div className="bg-blue-50 p-3 rounded">
-          <div className="text-2xl font-bold text-blue-600">
+          <div className="text-xl sm:text-2xl font-bold text-blue-600">
             {categoryStats.length}
           </div>
-          <div className="text-sm text-gray-600">Active Categories</div>
+          <div className="text-xs sm:text-sm text-gray-600">Active Categories</div>
         </div>
         <div className="bg-green-50 p-3 rounded">
-          <div className="text-2xl font-bold text-green-600">
-            {Math.round(categoryStats.reduce((sum, cat) => sum + cat.averageCRS, 0) / categoryStats.length)}
+          <div className="text-xl sm:text-2xl font-bold text-green-600">
+            {categoryStats.length > 0
+              ? Math.round(categoryStats.reduce((sum, cat) => sum + cat.averageCRS, 0) / categoryStats.length)
+              : 0}
           </div>
-          <div className="text-sm text-gray-600">Overall Avg CRS</div>
+          <div className="text-xs sm:text-sm text-gray-600">Overall Avg CRS</div>
         </div>
         <div className="bg-yellow-50 p-3 rounded">
-          <div className="text-2xl font-bold text-yellow-600">
+          <div className="text-xl sm:text-2xl font-bold text-yellow-600">
             {categoryStats.reduce((sum, cat) => sum + cat.totalDraws, 0)}
           </div>
-          <div className="text-sm text-gray-600">Total Draws</div>
+          <div className="text-xs sm:text-sm text-gray-600">Total Draws</div>
         </div>
         <div className="bg-purple-50 p-3 rounded">
-          <div className="text-2xl font-bold text-purple-600">
+          <div className="text-xl sm:text-2xl font-bold text-purple-600">
             {Math.round(categoryStats.reduce((sum, cat) => sum + cat.totalInvitations, 0) / 1000)}k
           </div>
-          <div className="text-sm text-gray-600">Total Invitations</div>
+          <div className="text-xs sm:text-sm text-gray-600">Total Invitations</div>
         </div>
       </div>
     </div>

@@ -451,15 +451,6 @@ export function parseExpressEntryDraw(
       raw.drawDistributionAsOn,
     );
 
-    // Debug logging for drawCutOff
-    if (raw.drawCutOff) {
-      console.log(
-        `Draw ${raw.drawNumber}: rawCutOff="${raw.drawCutOff}", parsedCutOff=`,
-        drawCutOff,
-        `isValid=${drawCutOff && !isNaN(drawCutOff.getTime())}`,
-      );
-    }
-
     // Parse score distribution
     const scoreDistribution: Record<string, number> = {};
     let totalCandidates = 0;

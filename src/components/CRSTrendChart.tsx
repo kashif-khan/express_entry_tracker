@@ -344,17 +344,17 @@ export const CRSTrendChart: React.FC<CRSTrendChartProps> = ({
   };
 
   return (
-    <div className={`relative bg-white rounded-lg shadow-lg p-6 ${className}`}>
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-semibold text-gray-800">CRS Score Trends</h3>
-        <div className="flex items-center space-x-4 text-sm text-gray-600">
+    <div className={`relative bg-white rounded-lg shadow-lg p-4 sm:p-6 ${className}`}>
+      <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 mb-4">
+        <h3 className="text-lg sm:text-xl font-semibold text-gray-800">CRS Score Trends</h3>
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-600">
           <div className="flex items-center space-x-1">
             <div className="w-3 h-0.5 bg-blue-500"></div>
             <span>Actual Scores</span>
           </div>
           <div className="flex items-center space-x-1">
             <div className="w-3 h-0.5 bg-yellow-500 border-dashed border-t-2"></div>
-            <span>Moving Average</span>
+            <span>Moving Avg</span>
           </div>
           {showPrediction && (
             <div className="flex items-center space-x-1">
@@ -365,18 +365,18 @@ export const CRSTrendChart: React.FC<CRSTrendChartProps> = ({
         </div>
       </div>
 
-      <div className="relative">
+      <div className="relative overflow-x-auto">
         <svg
           ref={svgRef}
           width="100%"
           height={height}
           className="border border-gray-200 rounded"
-          style={{ minWidth: "600px" }}
+          style={{ minWidth: "320px" }}
         />
 
         {selectedPoint && (
           <div
-            className="absolute bg-gray-800 text-white px-3 py-2 rounded shadow-lg pointer-events-none z-10 text-sm"
+            className="absolute bg-gray-800 text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded shadow-lg pointer-events-none z-10 text-xs sm:text-sm whitespace-nowrap"
             style={{
               left: selectedPoint.x + 60,
               top: selectedPoint.y + 20,
@@ -391,30 +391,30 @@ export const CRSTrendChart: React.FC<CRSTrendChartProps> = ({
       </div>
 
       {analytics && (
-        <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+        <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-center">
           <div className="bg-blue-50 p-3 rounded">
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-xl sm:text-2xl font-bold text-blue-600">
               {analytics.trends.percentileRanges.p50}
             </div>
-            <div className="text-sm text-gray-600">Median Score</div>
+            <div className="text-xs sm:text-sm text-gray-600">Median Score</div>
           </div>
           <div className="bg-green-50 p-3 rounded">
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-xl sm:text-2xl font-bold text-green-600">
               {analytics.trends.lowestInLast12Months}
             </div>
-            <div className="text-sm text-gray-600">12-Month Low</div>
+            <div className="text-xs sm:text-sm text-gray-600">12-Month Low</div>
           </div>
           <div className="bg-yellow-50 p-3 rounded">
-            <div className="text-2xl font-bold text-yellow-600">
+            <div className="text-xl sm:text-2xl font-bold text-yellow-600">
               {Math.round(analytics.trends.volatility)}
             </div>
-            <div className="text-sm text-gray-600">Volatility</div>
+            <div className="text-xs sm:text-sm text-gray-600">Volatility</div>
           </div>
           <div className="bg-red-50 p-3 rounded">
-            <div className="text-2xl font-bold text-red-600">
+            <div className="text-xl sm:text-2xl font-bold text-red-600">
               {analytics.trends.prediction.nextDraw}
             </div>
-            <div className="text-sm text-gray-600">Predicted Next</div>
+            <div className="text-xs sm:text-sm text-gray-600">Predicted Next</div>
           </div>
         </div>
       )}

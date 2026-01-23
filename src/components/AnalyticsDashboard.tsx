@@ -44,7 +44,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
       icon: '📊',
       description: 'High-level analytics summary',
       component: () => (
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
           <CRSTrendChart draws={draws} className="col-span-1" />
           <CategoryPerformanceDashboard draws={draws} className="col-span-1" />
         </div>
@@ -139,17 +139,17 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   const quickStats = getQuickStats();
 
   return (
-    <div className={`space-y-6 ${className}`}>
+    <div className={`space-y-4 sm:space-y-6 ${className}`}>
       {/* Header with Quick Stats */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Express Entry Analytics</h2>
-            <p className="text-gray-600">Advanced insights and predictions for Express Entry draws</p>
+      <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+        <div className="flex flex-col space-y-3 sm:flex-row sm:items-start sm:justify-between sm:space-y-0 mb-4 sm:mb-6">
+          <div className="flex-1">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Express Entry Analytics</h2>
+            <p className="text-sm sm:text-base text-gray-600 mt-1">Advanced insights and predictions for Express Entry draws</p>
           </div>
           <button
             onClick={() => setShowSettings(!showSettings)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base whitespace-nowrap self-start"
           >
             ⚙️ Settings
           </button>
@@ -157,29 +157,29 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 
         {/* Quick Stats */}
         {quickStats && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">{quickStats.latestDraw.drawCRS}</div>
-              <div className="text-sm text-gray-600">Latest CRS</div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="text-center p-3 sm:p-4 bg-blue-50 rounded-lg">
+              <div className="text-xl sm:text-2xl font-bold text-blue-600">{quickStats.latestDraw.drawCRS}</div>
+              <div className="text-xs sm:text-sm text-gray-600">Latest CRS</div>
               <div className="text-xs text-gray-500">
                 Draw #{quickStats.latestDraw.drawNumber}
               </div>
             </div>
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">{quickStats.avgScore}</div>
-              <div className="text-sm text-gray-600">Average CRS</div>
+            <div className="text-center p-3 sm:p-4 bg-green-50 rounded-lg">
+              <div className="text-xl sm:text-2xl font-bold text-green-600">{quickStats.avgScore}</div>
+              <div className="text-xs sm:text-sm text-gray-600">Average CRS</div>
               <div className="text-xs text-gray-500">All time</div>
             </div>
-            <div className="text-center p-4 bg-yellow-50 rounded-lg">
-              <div className="text-2xl font-bold text-yellow-600">{quickStats.lowestScore}</div>
-              <div className="text-sm text-gray-600">Lowest CRS</div>
+            <div className="text-center p-3 sm:p-4 bg-yellow-50 rounded-lg">
+              <div className="text-xl sm:text-2xl font-bold text-yellow-600">{quickStats.lowestScore}</div>
+              <div className="text-xs sm:text-sm text-gray-600">Lowest CRS</div>
               <div className="text-xs text-gray-500">Historical minimum</div>
             </div>
-            <div className="text-center p-4 bg-purple-50 rounded-lg">
-              <div className="text-2xl font-bold text-purple-600">
+            <div className="text-center p-3 sm:p-4 bg-purple-50 rounded-lg">
+              <div className="text-xl sm:text-2xl font-bold text-purple-600">
                 {Math.round(quickStats.totalInvitations / 1000)}k
               </div>
-              <div className="text-sm text-gray-600">Total Invitations</div>
+              <div className="text-xs sm:text-sm text-gray-600">Total Invitations</div>
               <div className="text-xs text-gray-500">All draws</div>
             </div>
           </div>
@@ -187,19 +187,19 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 
         {/* Settings Panel */}
         {showSettings && (
-          <div className="p-4 bg-gray-50 rounded-lg border mb-6">
-            <h3 className="font-semibold text-gray-800 mb-3">Analytics Settings</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-3 sm:p-4 bg-gray-50 rounded-lg border mb-4 sm:mb-6">
+            <h3 className="font-semibold text-sm sm:text-base text-gray-800 mb-3">Analytics Settings</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                   Your CRS Score (Optional)
                 </label>
                 <input
                   type="number"
                   value={userCRS || ''}
                   onChange={(e) => handleCRSChange(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter your CRS score for personalized analytics"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter your CRS score"
                   min="0"
                   max="1200"
                 />
@@ -208,10 +208,10 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                   Data Source
                 </label>
-                <div className="text-sm text-gray-600">
+                <div className="text-xs sm:text-sm text-gray-600 space-y-1">
                   <div>Source: IRCC Official JSON</div>
                   <div>Total Draws: {draws.length}</div>
                   <div>Last Updated: {quickStats ? new Date(quickStats.latestDraw.drawDate).toLocaleDateString() : 'N/A'}</div>
@@ -224,20 +224,20 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 
       {/* Navigation Tabs */}
       <div className="bg-white rounded-lg shadow-lg">
-        <div className="border-b border-gray-200">
-          <nav className="flex space-x-8 px-6" aria-label="Analytics tabs">
+        <div className="border-b border-gray-200 overflow-x-auto">
+          <nav className="flex space-x-4 sm:space-x-8 px-4 sm:px-6 min-w-max" aria-label="Analytics tabs">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap transition-colors ${
                   activeTab === tab.id
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
                 title={tab.description}
               >
-                <span className="mr-2">{tab.icon}</span>
+                <span className="mr-1 sm:mr-2">{tab.icon}</span>
                 {tab.label}
               </button>
             ))}
@@ -245,24 +245,24 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         </div>
 
         {/* Tab Content */}
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <div className="mb-4">
-            <h3 className="text-lg font-semibold text-gray-800">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-800">
               {tabs.find(tab => tab.id === activeTab)?.label}
             </h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-xs sm:text-sm text-gray-600 mt-1">
               {tabs.find(tab => tab.id === activeTab)?.description}
             </p>
           </div>
-          
+
           <ActiveComponent />
         </div>
       </div>
 
       {/* Help Section */}
-      <div className="bg-gray-50 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">Understanding the Analytics</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-gray-600">
+      <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3">Understanding the Analytics</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 text-xs sm:text-sm text-gray-600">
           <div>
             <h4 className="font-medium text-gray-800 mb-1">📈 Trend Analysis</h4>
             <p>Track CRS score patterns over time with moving averages and predictions based on historical data.</p>
@@ -292,19 +292,13 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 
       {/* Disclaimer */}
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-        <div className="flex">
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-yellow-800">Important Disclaimer</h3>
-            <div className="mt-2 text-sm text-yellow-700">
-              <p>
-                These analytics are based on historical data and statistical models. While they provide valuable 
-                insights, they cannot guarantee future outcomes. Express Entry draws are subject to policy changes, 
-                quota adjustments, and other factors not captured in historical data. Use these tools as guidance 
-                only and always refer to official IRCC sources for the most current information.
-              </p>
-            </div>
-          </div>
-        </div>
+        <h3 className="text-xs sm:text-sm font-medium text-yellow-800 mb-2">Important Disclaimer</h3>
+        <p className="text-xs sm:text-sm text-yellow-700">
+          These analytics are based on historical data and statistical models. While they provide valuable
+          insights, they cannot guarantee future outcomes. Express Entry draws are subject to policy changes,
+          quota adjustments, and other factors not captured in historical data. Use these tools as guidance
+          only and always refer to official IRCC sources for the most current information.
+        </p>
       </div>
     </div>
   );
